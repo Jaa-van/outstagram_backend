@@ -22,7 +22,7 @@ module.exports = (sequelize, DataTypes) => {
   }
   Comments.init(
     {
-      id: {
+      commentId: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
