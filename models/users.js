@@ -27,7 +27,7 @@ module.exports = (sequelize, DataTypes) => {
         sourceKey: "userid",
         foreignKey: "UserId",
       });
-      this.hasMany(models.Comments, {
+      this.hasMany(models.Follows, {
         sourceKey: "userid",
         foreignKey: "followUserId",
       });
@@ -74,7 +74,7 @@ module.exports = (sequelize, DataTypes) => {
     {
       sequelize,
       modelName: "Users",
-    }
+    },
   );
   return Users;
 };
