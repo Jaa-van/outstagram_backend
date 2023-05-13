@@ -22,7 +22,7 @@ module.exports = (sequelize, DataTypes) => {
   }
   Follows.init(
     {
-      id: {
+      followid: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
