@@ -46,9 +46,13 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         type: Sequelize.STRING,
       },
-      likes: {
+      likesCount: {
         type: Sequelize.NUMBER,
         defaultValue: 0,
+      },
+      commentsCount: {
+        type: Sequelize.INTEGER,
+        defalutValue: 0,
       },
       postPhoto: {
         type: Sequelize.STRING,
@@ -69,7 +73,7 @@ module.exports = (sequelize, DataTypes) => {
     {
       sequelize,
       modelName: "Posts",
-    }
+    },
   );
   return Posts;
 };
