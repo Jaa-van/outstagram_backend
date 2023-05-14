@@ -12,23 +12,23 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
 
       this.hasMany(models.Posts, {
-        sourceKey: "userid",
+        sourceKey: "userId",
         foreignKey: "UserId",
       });
       this.hasMany(models.Comments, {
-        sourceKey: "userid",
+        sourceKey: "userId",
         foreignKey: "UserId",
       });
       this.hasMany(models.Likes, {
-        sourceKey: "userid",
+        sourceKey: "userId",
         foreignKey: "UserId",
       });
       this.hasMany(models.Follows, {
-        sourceKey: "userid",
+        sourceKey: "userId",
         foreignKey: "UserId",
       });
       this.hasMany(models.Follows, {
-        sourceKey: "userid",
+        sourceKey: "userId",
         foreignKey: "followUserId",
       });
     }
@@ -44,6 +44,10 @@ module.exports = (sequelize, DataTypes) => {
       email: {
         allowNull: false,
         unique: true,
+        type: Sequelize.STRING,
+      },
+      name: {
+        allowNull: false,
         type: Sequelize.STRING,
       },
       nickname: {
