@@ -21,6 +21,23 @@ class AuthController {
     }
   };
 
+  authMail = async (req, res, next) => {
+    try {
+      const { mail } = req.body;
+      let authNum = Math.random().toString().substring(2, 8);
+      const authMailWithNum = await this.authService.sendAuthMail(
+        mail,
+        authNum,
+      );
+      console.log(authMailWithNum);
+      res.status(200).json({ authNum: authNum });
+    } catch (error) {
+      throw new Error(
+        error.message || "400/알수없는 이유로 오류가 발생하였습니다.",
+      );
+    }
+  };
+
   login = async (req, res, next) => {
     try {
       const { email, password } = req.body;

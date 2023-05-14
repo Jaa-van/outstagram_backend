@@ -3,6 +3,10 @@ const jwt = require("jsonwebtoken");
 const RedisClientRepository = require("../repositories/redishClient.repository");
 require("dotenv").config();
 const env = process.env;
+const nodemailer = require("nodemailer");
+const ejs = require("ejs");
+const path = require("path");
+var appDir = path.dirname(require.main.filename);
 
 class AuthService {
   authRepository = new AuthRepository();
@@ -22,6 +26,47 @@ class AuthService {
       userPhoto,
     );
     return "회원가입에 성공하였습니다.";
+  };
+
+  sendAuthMail = async (mail, authNum) => {
+    let emailTemplete;
+    ejs.renderFile(
+      appDir + "/template/authMail.ejs",
+      { authCode: authNum },
+      function (err, data) {
+        if (err) {
+          console.log(err);
+        }
+        emailTemplete = data;
+      },
+    );
+
+    let transporter = nodemailer.createTransport({
+      service: "naver",
+      host: "smtp.naver.com",
+      port: 465,
+      secure: false,
+      auth: {
+        user: process.env.NODEMAILER_USER,
+        pass: process.env.NODEMAILER_PASS,
+      },
+    });
+
+    let mailOptions = await transporter.sendMail({
+      from: `finestecher <${process.env.NODEMAILER_USER}>`,
+      to: mail,
+      subject: "회원가입을 위한 인증번호를 입력해주세요.",
+      html: emailTemplete,
+    });
+
+    transporter.sendMail(mailOptions, function (error, info) {
+      if (error) {
+        console.error(error);
+      }
+      console.log("Finish sending email");
+      transporter.close();
+    });
+    return "Sending email complete";
   };
 
   createAccessToken = async (email, password) => {
