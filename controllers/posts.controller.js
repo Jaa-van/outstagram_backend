@@ -33,7 +33,7 @@ class PostController {
       if (userId !== findOnePost.UserId) {
         throw new Error("414/게시글 수정의 권한이 존재하지 않습니다.");
       }
-      await this.PostService.putPost(postId, content);
+      await this.postService.putPost(postId, content);
       return res.status(200).json({ message: "게시물을 수정하였습니다." });
     } catch (error) {
       throw new Error(error.message || "400/게시물 수정에 실패하였습니다.");
@@ -52,10 +52,24 @@ class PostController {
       if (userId !== findOnePost.UserId) {
         throw new Error("414/게시글 삭제 권한이 존재하지 않습니다");
       }
-      await this.PostService.deletePost(postId);
+      await this.postService.deletePost(postId);
       return res.status(200).json({ message: "게시물을 삭제하였습니다." });
     } catch (error) {
       throw new Error(error.message || "400/게시물 삭제에 실패하였습니다.");
+    }
+  };
+  //메인페이지
+  main = async (req, res, next) => {
+    const { userId } = res.locals.user;
+    try {
+      if (!userId) {
+        throw new Error("414/게시글 조회 권한이 존재하지 않습니다");
+      }
+      const allFollowsPost = await this.postService.findAllFollowsPost(userId);
+      //like부분 boolean 으로 바꾸기 ㅠ
+      return res.status(200).json({ allFollowsPost });
+    } catch (error) {
+      throw new Error(error.message || "400/메인페이지 조회에 실패하였습니다.");
     }
   };
 }
