@@ -40,7 +40,7 @@ class CommentController {
                 throw new Error("403/게시물이 존재하지 않습니다.");
 
             // 댓글 조회
-            const findCommentsData = await this.commentService.findComments(commentId);
+            const findCommentsData = await this.commentService.findComments(postId);
             if (!findCommentsData)
                 throw new Error("403/댓글이 존재하지 않습니다.");
 

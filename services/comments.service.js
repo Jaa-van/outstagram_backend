@@ -20,7 +20,7 @@ class CommentService {
 
     // 댓글 전체 조회 (with postId)
     findComments = async(postId) => {
-        const findCommentsData = await this.commentRepository.findComments(commentId);
+        const findCommentsData = await this.commentRepository.findComments(postId);
         const result = findCommentsData.sort((a, b) => {
             return b.createdAt.getTime() - a.createdAt.getTime();
         });
