@@ -12,6 +12,9 @@ router.post(
   uploadPostPhoto.single("postPhoto"),
   postController.createPost,
 );
+
+// 좋아요 수정
+router.put("/posts/:postId/like", authMiddleware, postController.putLike);
 // 게시물 수정
 router.put("/posts/:postId", authMiddleware, postController.putPost);
 // 게시물 삭제

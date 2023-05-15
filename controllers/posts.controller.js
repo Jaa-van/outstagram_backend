@@ -76,6 +76,19 @@ class PostController {
       throw new Error(error.message || "400/메인페이지 조회에 실패하였습니다.");
     }
   };
+  // 좋아요 수정
+  putLike = async (req, res, next) => {
+    try {
+      const { postId } = req.params;
+      const { userId } = res.locals.user;
+
+      const like = await this.postService.putLike(postId, userId);
+
+      res.status(200).json({ message: like });
+    } catch (error) {
+      throw new Error(error.message || "400/게시글 좋아요에 실패하였습니다.");
+    }
+  };
 }
 
 module.exports = PostController;
