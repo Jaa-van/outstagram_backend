@@ -35,6 +35,7 @@ class PostRepository {
   //   return await Follows.findAll({ where: { UserId: userId } });
   // };
 
+  // 사용자가 팔로우한 사람들의 ID 가져오기
   getFollowings = async (userId) => {
     return await Follows.findAll({
       where: { UserId: userId },

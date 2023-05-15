@@ -14,6 +14,9 @@ class FollowController {
       throw new Error(error.message || "400/유저 팔로우에 실패하였습니다.");
     }
   };
+
+  // 유저 팔로워 조회
+  
 }
 
 module.exports = FollowController;
