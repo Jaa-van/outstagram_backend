@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const { users } = require("../models");
+const { Users } = require("../models");
 require("dotenv").config();
 const env = process.env;
 
@@ -15,13 +15,15 @@ module.exports = async (req, res, next) => {
       .json({ errorMessage: "419/Access Token이 유효하지 않습니다." });
     return;
   }
-  const userId = validateAccessToken(AT);
 
+  const userId = validateAccessToken(AT);
+  console.log(AT, userId);
   if (!userId) throw new Error("403/Access Token이 만료되었습니다.");
 
-  const user = await users.findOne({
+  const user = await Users.findOne({
     where: { userId: userId },
   });
+
   console.log(user);
   res.locals.user = user;
   console.log(`${userId}의 Payload 를 가진 Token이 성공적으로 인증되었습니다.`);

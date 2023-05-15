@@ -1,9 +1,9 @@
-const { Posts } = require("../models");
+const { Posts, Users, Likes } = require("../models");
 const { Op } = require("sequelize");
 
 class PostRepository {
   //롤링페이퍼 생성
-  creatPost = async (userId, content, postPhoto) => {
+  createPost = async (userId, content, postPhoto) => {
     const createPostData = await Posts.create({
       UserId: userId,
       content,
@@ -41,10 +41,10 @@ class PostRepository {
         {
           model: Likes,
           attributes: ["likeId"],
-          where: { [Op.and]: [{ PostId: postId }, { UserId: userId }] },
+          // where: { [Op.and]: [{ PostId: postId }, { UserId: userId }] },
         },
       ],
-      where: { userId },
+      // where: { UserId: userId },
     });
     findAllFollowsPost.sort((a, b) => b.createdAt - a.createdAt);
 
@@ -52,7 +52,9 @@ class PostRepository {
       findAllFollowsPost.map(async (post) => {
         const postJSON = post.toJSON();
         const likes = await Likes.findOne({
-          where: { [Op.and]: [{ PostId: postJSON.id }, { UserId: userId }] },
+          where: {
+            [Op.and]: [{ PostId: postJSON.postId }, { UserId: userId }],
+          },
         });
         postJSON.isLiked = !!likes;
         return postJSON;

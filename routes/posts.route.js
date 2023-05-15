@@ -1,11 +1,17 @@
 const express = require("express");
 const router = express.Router();
+const uploadPostPhoto = require("../modules/s3_postPhoto.js");
 const PostController = require("../controllers/posts.controller");
 const postController = new PostController();
 const authMiddleware = require("../middlewares/auth-middleware");
 
 // 게시물 생성
-router.post("/posts", authMiddleware, postController.createPost);
+router.post(
+  "/posts",
+  authMiddleware,
+  uploadPostPhoto.single("postPhoto"),
+  postController.createPost,
+);
 // 게시물 수정
 router.put("/posts/:postId", authMiddleware, postController.putPost);
 // 게시물 삭제
