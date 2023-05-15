@@ -31,6 +31,14 @@ class PostService {
     const FollowPost = await this.postRepository.findAllFollowsPost(userId);
     return FollowPost;
   };
+  putLike = async (postId, userId) => {
+    const existsPost = await this.postRepository.findOnePost(postId);
+    if (!existsPost) throw new Error("404/게시글이 존재하지 않습니다.");
+    const updatedLike = await this.postRepository.updateLikeDb(postId, userId);
+    if (updatedLike == "likesCreate")
+      return "게시글의 좋아요를 등록하였습니다.";
+    else return "게시글의 좋아요를 취소하였습니다.";
+  };
 }
 
 module.exports = PostService;

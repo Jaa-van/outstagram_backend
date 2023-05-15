@@ -17,14 +17,11 @@ module.exports = async (req, res, next) => {
   }
 
   const userId = validateAccessToken(AT);
-  console.log(AT, userId);
   if (!userId) throw new Error("403/Access Token이 만료되었습니다.");
 
   const user = await Users.findOne({
     where: { userId: userId },
   });
-
-  console.log(user);
   res.locals.user = user;
   console.log(`${userId}의 Payload 를 가진 Token이 성공적으로 인증되었습니다.`);
   next();

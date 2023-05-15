@@ -63,5 +63,34 @@ class PostRepository {
 
     return postsLikes;
   };
+
+  findOnePost = async (postId) => {
+    const existsPost = await Posts.findOne({
+      where: { postId: postId },
+    });
+    return existsPost;
+  };
+
+  updateLikeDb = async (postId, userId) => {
+    const existsLikesByUser = await Likes.findOne({
+      where: {
+        [Op.and]: [{ PostId: postId }, { UserId: userId }],
+      },
+    });
+    if (existsLikesByUser) {
+      await Likes.destroy({
+        where: {
+          [Op.and]: [{ PostId: postId }, { UserId: userId }],
+        },
+      });
+      return "likesDestroy";
+    } else {
+      await Likes.create({
+        PostId: postId,
+        UserId: userId,
+      });
+      return "likesCreate";
+    }
+  };
 }
 module.exports = PostRepository;
