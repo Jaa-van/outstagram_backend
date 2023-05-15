@@ -35,7 +35,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       UserId: {
         allowNull: false,
-        type: Sequelize.NUMBER,
+        type: Sequelize.INTEGER,
         references: {
           model: "users",
           key: "userId",
@@ -47,12 +47,12 @@ module.exports = (sequelize, DataTypes) => {
         type: Sequelize.STRING,
       },
       likesCount: {
-        type: Sequelize.NUMBER,
+        type: Sequelize.INTEGER,
         defaultValue: 0,
       },
       commentsCount: {
         type: Sequelize.INTEGER,
-        defalutValue: 0,
+        defaultValue: 0,
       },
       postPhoto: {
         type: Sequelize.STRING,

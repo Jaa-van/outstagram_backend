@@ -9,11 +9,15 @@ class PostController {
     const { content } = req.body;
     const { postPhoto } = req;
     try {
-      if (!content || !postPhoto) {
+      if (!content) {
         throw new Error("412/모든 필드의 값은 필수 값 입니다.");
       }
 
-      await this.postService.createPost(userId, content, postPhoto);
+      const newPost = await this.postService.createPost(
+        userId,
+        content,
+        postPhoto,
+      );
       return res.status(200).json({ message: "게시물을 생성하였습니다." });
     } catch (error) {
       throw new Error(error.message || "400/게시물 생성에 실패하였습니다.");

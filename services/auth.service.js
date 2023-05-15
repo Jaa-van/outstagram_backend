@@ -71,7 +71,7 @@ class AuthService {
 
   createAccessToken = async (email, password) => {
     const loginId = await this.authRepository.loginDb(email, password);
-    if (!loginId) throw new Error("이메일 또는 패스워드를 확인해주세요.");
+    if (!loginId) throw new Error("412/이메일 또는 패스워드를 확인해주세요.");
     const accessToken = jwt.sign(
       { userId: loginId.userId }, // JWT 데이터
       `${env.SECRET_KEY}`, // 비밀키

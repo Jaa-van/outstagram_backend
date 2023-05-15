@@ -28,7 +28,7 @@ module.exports = {
       },
       commentsCount: {
         type: Sequelize.INTEGER,
-        defalutValue: 0,
+        defaultValue: 0,
       },
       postPhoto: {
         type: Sequelize.STRING,

@@ -2,9 +2,9 @@ const PostRepository = require("../repositories/posts.repository");
 const { Posts } = require("../models");
 
 class PostService {
-  postRepository = new PostRepository(Posts);
+  postRepository = new PostRepository();
   //게시글 생성
-  creatPost = async (userId, content, postPhoto) => {
+  createPost = async (userId, content, postPhoto) => {
     const createPostData = await this.postRepository.createPost(
       userId,
       content,
