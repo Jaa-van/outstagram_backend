@@ -46,9 +46,9 @@ class AuthController {
 
       res.cookie("accessToken", `Bearer ${At}`);
       res.cookie("refreshToken", `Bearer ${Rt}`);
-      res.setHeader("accessToken", `Bearer ${At}`);
-      res.setHeader("refreshToken", `Bearer ${Rt}`);
-      res.status(200).json({ accessToken: At, refreshToken: Rt });
+      res
+        .status(200)
+        .json({ accessToken: `Bearer ${At}`, refreshToken: `Bearer ${Rt}` });
     } catch (error) {
       throw new Error(error.message || "400/로그인에 실패하였습니다.");
     }
@@ -62,7 +62,7 @@ class AuthController {
       const newAt = await this.authService.createAccessTokenById(userId);
       console.log("accessToken 을 다시 발급하였습니다!");
       res.cookie("accessToken", `Bearer ${newAt}`);
-      res.status(200).json({ accessToken: newAt });
+      res.status(200).json({ accessToken: `Bearer ${newAt}` });
     } catch (error) {
       throw new Error(
         error.message || "400/refreshToken 검증에 실패하였습니다.",
