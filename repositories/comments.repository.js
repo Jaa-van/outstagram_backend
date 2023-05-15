@@ -1,4 +1,4 @@
-const { Comments, Posts } = require("../models");
+const { Comments, Posts, Users } = require("../models");
 const { Op } = require("sequelize");
 
 
@@ -10,6 +10,9 @@ class CommentRepository {
             PostId: postId,
             comment
         });
+
+        // 댓글 수(count)를 증가시킵니다.
+        await Posts.increment("commentsCount", { where: { postId } });
         return createCommentData;
     };
 
@@ -18,20 +21,25 @@ class CommentRepository {
         return await Posts.findOne({ where: { postId } });
     };
 
+    // 유저 한명 조회
+    findOneUser = async (userId) => {
+        return await Users.findOne({ where: { userId } }); 
+    }
+
     // 댓글 전체 조회 (Comments model에서 with postId)
     findComments = async (postId) => {
-        return await Comments.findAll({ where: { postId } }); // 수정 필요할 듯
+        return await Comments.findAll({ where: { postId } });
     }
 
     // 댓글 하나 찾기 (with commentId)
     findOneComment = async (commentId) => {
-        const findOneComment = await this.Comments.findOne({ where: { commentId } });
+        const findOneComment = await Comments.findOne({ where: { commentId } });
         return findOneComment;
     }
 
     // 게시물 상세 조회 들어가서 댓글 삭제
     deleteComment = async (userId, postId, commentId) => {
-        const deleteCommentData = await this.Comments.destroy({
+        const deleteCommentData = await Comments.destroy({
             where: { [Op.and]: [{ UserId: userId }, { PostId: postId }, { commentId }] }
         });
         return deleteCommentData
