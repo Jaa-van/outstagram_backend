@@ -1,4 +1,4 @@
-const { Posts, Users, Likes } = require("../models");
+const { Posts, Users, Likes, Follows } = require("../models");
 const { Op } = require("sequelize");
 
 class PostRepository {
@@ -29,10 +29,23 @@ class PostRepository {
     return;
   };
 
-  //메인페이지
-  //내가팔로우한 사람들의 게시글 조회
-  findAllFollowsPost = async (userId) => {
+  // 메인페이지
+  // 내가 팔로우한 유저 조회
+  // findAllFollowUsers = async (userId) => {
+  //   return await Follows.findAll({ where: { UserId: userId } });
+  // };
+
+  getFollowings = async (userId) => {
+    return await Follows.findAll({
+      where: { UserId: userId },
+      attributes: ["followUserId"],
+    });
+  };
+
+  //사용자들이 팔로우한 유저의 게시물 가져오기
+  getPostsByUserIds = async (followedUserIds, userId) => {
     const findAllFollowsPost = await Posts.findAll({
+      where: { UserId: followedUserIds },
       include: [
         {
           model: Users,
@@ -41,11 +54,10 @@ class PostRepository {
         {
           model: Likes,
           attributes: ["likeId"],
-          // where: { [Op.and]: [{ PostId: postId }, { UserId: userId }] },
         },
       ],
-      // where: { UserId: userId },
     });
+
     findAllFollowsPost.sort((a, b) => b.createdAt - a.createdAt);
 
     const postsLikes = await Promise.all(
@@ -60,9 +72,10 @@ class PostRepository {
         return postJSON;
       }),
     );
-
     return postsLikes;
   };
+
+  //게시글좋아요
 
   findOnePost = async (postId) => {
     const existsPost = await Posts.findOne({

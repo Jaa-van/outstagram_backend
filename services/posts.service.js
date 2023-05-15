@@ -1,5 +1,6 @@
 const PostRepository = require("../repositories/posts.repository");
-const { Posts } = require("../models");
+const { Posts, Follows } = require("../models");
+const followRepository = require("../repositories/follow.repository");
 
 class PostService {
   postRepository = new PostRepository();
@@ -27,10 +28,33 @@ class PostService {
     return deletePost;
   };
   //메인페이지
+
   findAllFollowsPost = async (userId) => {
-    const FollowPost = await this.postRepository.findAllFollowsPost(userId);
-    return FollowPost;
+    // const FollowUsers = await this.postRepository.findAllFollowUsers(userId);
+
+    // const FollowUserId = await FollowUsers.map((e) => {
+    //   return {
+    //     followUserId: e.followUserId,
+    //   };
+    // });
+
+    // const FollowPost = await this.postRepository.findAllFollowsPost([
+    //   FollowUserId.followUserId,
+    // ]);
+    const followings = await this.postRepository.getFollowings(userId);
+    const followedUserIds = await followings.map(
+      (following) => following.followUserId,
+    );
+    const followedPosts = await this.postRepository.getPostsByUserIds(
+      followedUserIds,
+      userId,
+    );
+    console.log(followedPosts, "팔로잉즈!!!!!~~~~~~~~~~~~");
+    return followedPosts;
+
+    // return FollowPost;
   };
+  //게시글좋아요
   putLike = async (postId, userId) => {
     const existsPost = await this.postRepository.findOnePost(postId);
     if (!existsPost) throw new Error("404/게시글이 존재하지 않습니다.");

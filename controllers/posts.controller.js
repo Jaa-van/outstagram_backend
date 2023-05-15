@@ -1,5 +1,4 @@
 const PostService = require("../services/posts.service");
-
 class PostController {
   postService = new PostService();
 
@@ -63,18 +62,25 @@ class PostController {
     }
   };
   //메인페이지
+
   main = async (req, res, next) => {
     const { userId } = res.locals.user;
     try {
-      if (!userId) {
-        throw new Error("414/게시글 조회 권한이 존재하지 않습니다");
-      }
-      const allFollowsPost = await this.postService.findAllFollowsPost(userId);
-      //like부분 boolean 으로 바꾸기 ㅠ
-      return res.status(200).json({ allFollowsPost });
+      const followedPosts = await this.postService.findAllFollowsPost(userId);
+      res.status(200).json(followedPosts);
     } catch (error) {
       throw new Error(error.message || "400/메인페이지 조회에 실패하였습니다.");
     }
+    // try {
+    //   if (!userId) {
+    //     throw new Error("414/게시글 조회 권한이 존재하지 않습니다");
+    //   }
+
+    //   const allFollowsPost = await this.postService.findAllFollowsPost(userId);
+    //   return res.status(200).json({ allFollowsPost });
+    // } catch (error) {
+    //   throw new Error(error.message || "400/메인페이지 조회에 실패하였습니다.");
+    // }
   };
   // 좋아요 수정
   putLike = async (req, res, next) => {
