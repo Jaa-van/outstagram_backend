@@ -21,7 +21,7 @@ class CommentService {
         const findCommentsData = await this.commentRepository.findComments(postId);
         const result = await Promise.all(
             findCommentsData.map(async(comment) => {
-                const user = await this.commentRepository.findOneUser(comment.UserId);// userService에 사용자 ID로 사용자를 찾는 함수가 있다고 가정합니다.
+                const user = await this.commentRepository.findOneUser(comment.UserId);// 유저 찾기
 
                 return {
                     commentId: comment.commentId,
