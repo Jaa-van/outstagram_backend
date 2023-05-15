@@ -1,4 +1,5 @@
 const CommentService = require("../services/comments.service.js");
+const { Posts } = require("../models");
 
 // Comment의 컨트롤러(controller) 역할을 하는 클래스
 class CommentController {
@@ -10,7 +11,7 @@ class CommentController {
     const { postId } = req.params;
     const { comment } = req.body;
     try {
-      const findOnePost = await this.commentService.findOnePost(postId); // 지현님 pr하면 확인 후 수정 필요 // service 계층에 구현된 createComment 로직을 실행합니다.
+      const findOnePost = await this.commentService.findOnePost(postId); // service 계층에 구현된 createComment 로직을 실행합니다.
       if (!findOnePost) throw new Error("403/게시물이 존재하지 않습니다.");
       if (!comment) throw new Error("403/댓글 작성에 실패하였습니다.");
 
@@ -32,7 +33,7 @@ class CommentController {
   searchComment = async (req, res, next) => {
     const { postId } = req.params;
     try {
-      const findOnePost = await this.commentService.findOnePost(postId); // 지현님 pr하면 확인 후 수정 필요
+      const findOnePost = await this.commentService.findOnePost(postId); 
 
       // 게시물 유효성 검사
       if (!findOnePost) throw new Error("403/게시물이 존재하지 않습니다.");
@@ -55,17 +56,15 @@ class CommentController {
     const { postId, commentId } = req.params;
 
     try {
-      const findOnePost = await this.commentService.findOnePost(postId); // 지현님 pr하면 확인 후 수정 필요
+      const findOnePost = await this.commentService.findOnePost(postId); 
       // 게시물 유효성 검사
       if (!findOnePost) throw new Error("403/게시물이 존재하지 않습니다.");
 
-      const findOneComment = await this.commentService.findOneComment(
-        commentId,
-      );
+      const findOneComment = await this.commentService.findOneComment(commentId);
       // 댓글 하나 찾기
       if (!findOneComment) throw new Error("403/댓글이 존재하지 않습니다.");
 
-      if (findOneComment.userId !== userId)
+      if (findOneComment.UserId !== userId)
         throw new Error("403/게시글 삭제 권한이 존재하지 않습니다.");
 
       const deleteCommentData = await this.commentService.deleteComment(
