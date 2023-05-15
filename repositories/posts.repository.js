@@ -1,4 +1,5 @@
 const { Posts } = require("../models");
+const { Op } = require("sequelize");
 
 class PostRepository {
   //롤링페이퍼 생성
@@ -28,10 +29,37 @@ class PostRepository {
     return;
   };
 
-  //게시글 상세 조회
-  findOnePost = async (postId) => {
-    const findOnePost = await Posts.findByPk(postId);
-    return findOnePost;
+  //메인페이지
+  //내가팔로우한 사람들의 게시글 조회
+  findAllFollowsPost = async (userId) => {
+    const findAllFollowsPost = await Posts.findAll({
+      include: [
+        {
+          model: Users,
+          attributes: ["nickname", "userPhoto"],
+        },
+        {
+          model: Likes,
+          attributes: ["likeId"],
+          where: { [Op.and]: [{ PostId: postId }, { UserId: userId }] },
+        },
+      ],
+      where: { userId },
+    });
+    findAllFollowsPost.sort((a, b) => b.createdAt - a.createdAt);
+
+    const postsLikes = await Promise.all(
+      findAllFollowsPost.map(async (post) => {
+        const postJSON = post.toJSON();
+        const likes = await Likes.findOne({
+          where: { [Op.and]: [{ PostId: postJSON.id }, { UserId: userId }] },
+        });
+        postJSON.isLiked = !!likes;
+        return postJSON;
+      }),
+    );
+
+    return postsLikes;
   };
 }
 module.exports = PostRepository;
