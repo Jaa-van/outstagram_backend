@@ -1,8 +1,12 @@
+const http = require("http");
 const express = require("express");
 const cookieParser = require("cookie-parser");
 require("express-async-errors");
 const app = express();
+const cors = require("cors");
 const port = 3000;
+
+app.use(cors());
 
 const router = require("./routes");
 
