@@ -47,6 +47,19 @@ class PostRepository {
       where: { userId },
     });
     findAllFollowsPost.sort((a, b) => b.createdAt - a.createdAt);
+
+    const postsLikes = await Promise.all(
+      findAllFollowsPost.map(async (post) => {
+        const postJSON = post.toJSON();
+        const likes = await Likes.findOne({
+          where: { [Op.and]: [{ PostId: postJSON.id }, { UserId: userId }] },
+        });
+        postJSON.isLiked = !!likes;
+        return postJSON;
+      }),
+    );
+
+    return postsLikes;
   };
 }
 module.exports = PostRepository;
