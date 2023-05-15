@@ -46,8 +46,8 @@ class AuthController {
 
       res.cookie("accessToken", `Bearer ${At}`);
       res.cookie("refreshToken", `Bearer ${Rt}`);
-      res.set("accessToken", `Bearer ${At}`);
-      res.set("refreshToken", `Bearer ${Rt}`);
+      res.setHeader("accessToken", `Bearer ${At}`);
+      res.setHeader("refreshToken", `Bearer ${Rt}`);
       res.status(200).json({ accessToken: At, refreshToken: Rt });
     } catch (error) {
       throw new Error(error.message || "400/로그인에 실패하였습니다.");
