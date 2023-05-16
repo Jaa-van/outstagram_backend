@@ -17,7 +17,9 @@ class AuthController {
 
       res.status(201).json({ message: createId });
     } catch (error) {
-      throw new Error(error.message || "400/회원가입에 실패하였습니다.");
+      // 1. 미들웨어에서 error.message가 없는 경우 failedApi를 가지고 처리
+      error.failedApi = "회원가입";
+      throw error;
     }
   };
 
@@ -32,25 +34,33 @@ class AuthController {
       console.log(authMailWithNum);
       res.status(200).json({ authNum: authNum });
     } catch (error) {
-      throw new Error(
-        error.message || "400/알수없는 이유로 오류가 발생하였습니다.",
-      );
+      error.failedApi = "이메일 인증";
+      throw error;
     }
   };
 
   login = async (req, res, next) => {
     try {
       const { email, password } = req.body;
-      const At = await this.authService.createAccessToken(email, password);
-      const Rt = await this.authService.createRefreshToken(email, password);
+      // 가동성을 위해 At -> accessToken, Rt -> refreshToken
+      const accessToken = await this.authService.createAccessToken(
+        email,
+        password,
+      );
+      const refreshToken = await this.authService.createRefreshToken(
+        email,
+        password,
+      );
 
-      res.cookie("accessToken", `Bearer ${At}`);
-      res.cookie("refreshToken", `Bearer ${Rt}`);
-      res
-        .status(200)
-        .json({ accessToken: `Bearer ${At}`, refreshToken: `Bearer ${Rt}` });
+      res.cookie("accessToken", `Bearer ${accessToken}`);
+      res.cookie("refreshToken", `Bearer ${refreshToken}`);
+      res.status(200).json({
+        accessToken: `Bearer ${accessToken}`,
+        refreshToken: `Bearer ${refreshToken}`,
+      });
     } catch (error) {
-      throw new Error(error.message || "400/로그인에 실패하였습니다.");
+      error.failedApi = "로그인";
+      throw error;
     }
   };
   rtVerify = async (req, res, next) => {
@@ -58,15 +68,18 @@ class AuthController {
       const { refreshToken } = req.cookies;
       const { userId } = req.body;
 
-      const Rt = await this.authService.rtVerify(refreshToken);
-      const newAt = await this.authService.createAccessTokenById(userId);
-      console.log("accessToken 을 다시 발급하였습니다!");
-      res.cookie("accessToken", `Bearer ${newAt}`);
-      res.status(200).json({ accessToken: `Bearer ${newAt}` });
-    } catch (error) {
-      throw new Error(
-        error.message || "400/refreshToken 검증에 실패하였습니다.",
+      // 사용되지 않는 변수 Rt 정의 x
+      await this.authService.rtVerify(refreshToken);
+
+      const newAccessToken = await this.authService.createAccessTokenById(
+        userId,
       );
+      console.log("accessToken 을 다시 발급하였습니다!");
+      res.cookie("accessToken", `Bearer ${newAccessToken}`);
+      res.status(200).json({ accessToken: `Bearer ${newAccessToken}` });
+    } catch (error) {
+      error.failedApi = "refreshToken 검증";
+      throw error;
     }
   };
 }

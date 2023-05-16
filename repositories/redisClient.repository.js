@@ -1,6 +1,7 @@
 const redis = require("redis");
-require("dotenv").config();
+// sequelize 없어도 되는지?
 const sequelize = require("sequelize");
+require("dotenv").config();
 
 class RedisClientRepository {
   constructor() {
@@ -17,10 +18,14 @@ class RedisClientRepository {
       this.redisConnected = true;
       console.info("Redis connected!");
     });
-    this.redisClient.on("error", (err) => {
-      console.error("Redis Client Error", err);
+
+    this.redisClient.on("error", (error) => {
+      console.error("Redis Client Error", error);
     });
-    if (!this.redisConnected) this.redisClient.connect().then(); // redis v4 연결 (비동기)
+
+    if (!this.redisConnected) {
+      this.redisClient.connect().then();
+    } // redis v4 연결 (비동기)
   };
 
   setRefreshToken = async (refreshToken, email) => {
@@ -30,8 +35,7 @@ class RedisClientRepository {
 
   getRefreshToken = async (refreshToken) => {
     await this.initialize();
-    const token = await this.redisClient.v4.get(refreshToken);
-    return token;
+    return await this.redisClient.v4.get(refreshToken);
   };
 
   deleteRefreshToken = async (refreshToken) => {

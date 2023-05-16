@@ -1,33 +1,31 @@
-const { Users } = require("../models");
-
 class AuthRepository {
+  constructor(usersModel) {
+    this.usersModel = usersModel;
+  }
+
   loginDb = async (email, password) => {
-    const findId = await Users.findOne({
+    return await this.usersModel.findOne({
       where: { email, password },
     });
-    return findId;
   };
   findByEmail = async (email) => {
-    const existsEmail = await Users.findOne({
+    return await this.usersModel.findOne({
       where: { email },
     });
-    return existsEmail;
   };
   findByNickname = async (nickname) => {
-    const existsNickname = await Users.findOne({
+    return await this.usersModel.findOne({
       where: { nickname },
     });
-    return existsNickname;
   };
   createId = async (email, name, nickname, password, userPhoto) => {
-    const createIdDb = await Users.create({
+    return await this.usersModel.create({
       email,
       name,
       nickname,
       password,
       userPhoto,
     });
-    return createIdDb;
   };
 }
 

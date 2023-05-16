@@ -9,14 +9,15 @@ class FollowController {
       const { userId } = res.locals.user;
 
       const follow = await this.followService.putFollow(userId, followUserId);
+
       res.status(200).json({ message: follow });
     } catch (error) {
-      throw new Error(error.message || "400/유저 팔로우에 실패하였습니다.");
+      error.failedApi = "유저 팔로우";
+      throw error;
     }
   };
 
   // 유저 팔로워 조회
-  
 }
 
 module.exports = FollowController;

@@ -1,34 +1,40 @@
-const { Follows, Users } = require("../models");
 const { Op } = require("sequelize");
 
 class FollowRepository {
+  constructor(followsModel, usersModel) {
+    this.followsModel = followsModel;
+    this.usersModel = usersModel;
+  }
+
   updateFollowDb = async (userId, followUserId) => {
-    const existsFollowUser = await Follows.findOne({
+    const existsFollowUser = await this.followsModel.findOne({
       where: {
         [Op.and]: [{ UserId: userId }, { followUserId: followUserId }],
       },
     });
+
     if (existsFollowUser) {
-      await Follows.destroy({
+      await this.followsModel.destroy({
         where: {
           [Op.and]: [{ UserId: userId }, { followUserId: followUserId }],
         },
       });
+
       return "followDestroy";
     } else {
-      await Follows.create({
+      await this.followsModel.create({
         UserId: userId,
         followUserId: followUserId,
       });
+
       return "followCreate";
     }
   };
 
   findUserById = async (followUserId) => {
-    const existsUser = await Users.findOne({
+    return await this.usersModel.findOne({
       where: { UserId: followUserId },
     });
-    return existsUser;
   };
 }
 
