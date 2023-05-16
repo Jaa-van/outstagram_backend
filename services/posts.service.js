@@ -1,9 +1,10 @@
 const PostRepository = require("../repositories/posts.repository");
-
+const AuthRepository = require("../repositories/auth.repository");
 const { Posts, Users, Likes, Follows } = require("../models");
 
 class PostService {
   postRepository = new PostRepository(Posts, Users, Likes, Follows);
+  authRepository = new AuthRepository(Users);
   //게시글 생성
   createPost = async (userId, content, postPhoto) => {
     return await this.postRepository.createPost(userId, content, postPhoto);
@@ -138,6 +139,14 @@ class PostService {
     } else {
       return "게시글의 좋아요를 취소하였습니다.";
     }
+  };
+
+  getUserData = async (userId) => {
+    const userData = await this.authRepository.findUserById(userId);
+    return {
+      nickname: userData.nickname,
+      userPhoto: userData.userPhoto,
+    };
   };
 }
 
