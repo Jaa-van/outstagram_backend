@@ -9,7 +9,7 @@ class CommentService {
   createComment = async (userId, postId, comment) => {
     await this.commentRepository.createComment(userId, postId, comment);
 
-    return { message: "댓글 작성 완료" };
+    return { message: "댓글을 작성하였습니다." };
   };
 
   // 게시물 조회 (with postId) 지현님 posts 하면 거기서 갖고오기
@@ -50,7 +50,7 @@ class CommentService {
   deleteComment = async (userId, postId, commentId) => {
     await this.commentRepository.deleteComment(userId, postId, commentId);
 
-    return { message: "댓글 삭제 완료" };
+    return { message: "댓글을 지웠습니다." };
   };
 
   // 댓글 한개 조회 (with postId, commentId)
