@@ -61,8 +61,8 @@ class PostController {
       throw new Error(error.message || "400/게시물 삭제에 실패하였습니다.");
     }
   };
-  //메인페이지
 
+  //메인페이지
   main = async (req, res, next) => {
     const { userId } = res.locals.user;
     try {
@@ -71,16 +71,6 @@ class PostController {
     } catch (error) {
       throw new Error(error.message || "400/메인페이지 조회에 실패하였습니다.");
     }
-    // try {
-    //   if (!userId) {
-    //     throw new Error("414/게시글 조회 권한이 존재하지 않습니다");
-    //   }
-
-    //   const allFollowsPost = await this.postService.findAllFollowsPost(userId);
-    //   return res.status(200).json({ allFollowsPost });
-    // } catch (error) {
-    //   throw new Error(error.message || "400/메인페이지 조회에 실패하였습니다.");
-    // }
   };
   // 좋아요 수정
   putLike = async (req, res, next) => {
@@ -95,7 +85,7 @@ class PostController {
       throw new Error(error.message || "400/게시글 좋아요에 실패하였습니다.");
     }
   };
-
+  //탐색페이지
   getRandomPosts = async (req, res, next) => {
     try {
       const { userId } = res.locals.user;

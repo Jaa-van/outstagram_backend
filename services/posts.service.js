@@ -30,17 +30,6 @@ class PostService {
   //메인페이지
 
   findAllFollowsPost = async (userId) => {
-    // const FollowUsers = await this.postRepository.findAllFollowUsers(userId);
-
-    // const FollowUserId = await FollowUsers.map((e) => {
-    //   return {
-    //     followUserId: e.followUserId,
-    //   };
-    // });
-
-    // const FollowPost = await this.postRepository.findAllFollowsPost([
-    //   FollowUserId.followUserId,
-    // ]);
     const followings = await this.postRepository.getFollowings(userId);
     const followedUserIds = await followings.map(
       (following) => following.followUserId,
@@ -76,18 +65,7 @@ class PostService {
     return result;
   };
 
-  // return FollowPost;
-
-  //게시글좋아요
-  putLike = async (postId, userId) => {
-    const existsPost = await this.postRepository.findOnePost(postId);
-    if (!existsPost) throw new Error("404/게시글이 존재하지 않습니다.");
-    const updatedLike = await this.postRepository.updateLikeDb(postId, userId);
-    if (updatedLike == "likesCreate")
-      return "게시글의 좋아요를 등록하였습니다.";
-    else return "게시글의 좋아요를 취소하였습니다.";
-  };
-
+  //탐색페이지
   getRandomPosts = async (userId) => {
     const randomPosts = await this.postRepository.getRandomPostsFromDb(userId);
     const result = await Promise.all(
@@ -114,6 +92,16 @@ class PostService {
       }),
     );
     return result;
+  };
+
+  //게시글좋아요
+  putLike = async (postId, userId) => {
+    const existsPost = await this.postRepository.findOnePost(postId);
+    if (!existsPost) throw new Error("404/게시글이 존재하지 않습니다.");
+    const updatedLike = await this.postRepository.updateLikeDb(postId, userId);
+    if (updatedLike == "likesCreate")
+      return "게시글의 좋아요를 등록하였습니다.";
+    else return "게시글의 좋아요를 취소하였습니다.";
   };
 }
 
