@@ -25,11 +25,11 @@ module.exports = (sequelize, DataTypes) => {
       });
       this.hasMany(models.Follows, {
         sourceKey: "userId",
-        foreignKey: "UserId",
+        foreignKey: "followUserId",
       });
       this.hasMany(models.Follows, {
         sourceKey: "userId",
-        foreignKey: "followUserId",
+        foreignKey: "UserId",
       });
     }
   }

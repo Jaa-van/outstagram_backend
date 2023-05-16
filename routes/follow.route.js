@@ -8,4 +8,6 @@ const followController = new FollowController();
 
 router.put("/users/:userId/follow", authMiddleware, followController.putFollow);
 
+router.get("/users/:userId/follower", followController.getFollower);
+
 module.exports = router;

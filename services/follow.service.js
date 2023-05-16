@@ -26,6 +26,12 @@ class FollowService {
       return "팔로우 취소하였습니다.";
     }
   };
+
+  getFollower = async (myUserId) => {
+    const followerListFromDb =
+      await this.followRepository.getFollowersByFollowUserId(myUserId);
+    return followerListFromDb;
+  };
 }
 
 module.exports = FollowService;
