@@ -24,5 +24,7 @@ router.delete("/posts/:postId", authMiddleware, postController.deletePost);
 // 메인페이지
 router.get("/main", authMiddleware, postController.main);
 router.get("/postsrandom", authMiddleware, postController.getRandomPosts);
+//게시물 상세페이지
+router.get("/posts/:postId", authMiddleware, postController.getPost);
 
 module.exports = router;
