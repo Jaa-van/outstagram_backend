@@ -110,6 +110,28 @@ class PostRepository {
     return postsLikes;
   };
 
+  //팔로우여부구하기
+  postUserFollow = async (followUserId, userId) => {
+    return await this.followsModel.findOne({
+      where: { [Op.and]: [{ followUserId: followUserId }, { UserId: userId }] },
+      attributes: ["followId"],
+    });
+  };
+
+  //포스트정보
+  getPost = async (postId) => {
+    const postInfo = await this.postsModel.findOne({
+      where: { postId },
+      include: [
+        {
+          model: this.usersModel,
+          attributes: ["nickname", "userPhoto"],
+        },
+      ],
+    });
+    return postInfo;
+  };
+
   //게시글 좋아요
 
   findOnePost = async (postId) => {

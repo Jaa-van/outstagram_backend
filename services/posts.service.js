@@ -90,6 +90,43 @@ class PostService {
     return result;
   };
 
+  //게시물 상세페이지
+
+  findOnePost = async (postId, userId) => {
+    const post = await this.postRepository.getPost(postId);
+
+    const follow = await this.postRepository.postUserFollow(
+      post.UserId,
+      userId,
+    );
+    let followed;
+    if (!follow) {
+      followed = false;
+    } else {
+      followed = true;
+    }
+    let mine;
+    if (post.UserId == userId) {
+      mine = true;
+    } else {
+      mine = false;
+    }
+
+    const result = {
+      postId: post.postId,
+      UserId: post.UserId,
+      content: post.content,
+      postPhoto: post.postPhoto,
+      likesCount: post.likesCount,
+      commentsCount: post.commentsCount,
+      nickname: post.User.nickname,
+      userPhoto: post.User.userPhoto,
+      mine: mine,
+      follow: followed,
+    };
+    return result;
+  };
+
   //게시글좋아요
   putLike = async (postId, userId) => {
     const existsPost = await this.postRepository.findOnePost(postId);
