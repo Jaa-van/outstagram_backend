@@ -66,6 +66,7 @@ class AuthController {
   rtVerify = async (req, res, next) => {
     try {
       const { refreshToken, userId } = req.headers || req.cookies;
+      console.log(req.headers);
       // const { userId } = req.body;
 
       // 사용되지 않는 변수 Rt 정의 x
