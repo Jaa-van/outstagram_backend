@@ -17,7 +17,13 @@ class FollowController {
     }
   };
 
-  // 유저 팔로워 조회
+  // 유저를 팔로우하는 사람들 조회
+  getFollower = async (req, res, next) => {
+    const myUserId = req.params.userId;
+
+    const followerList = await this.followService.getFollower(myUserId);
+    res.status(200).json(followerList);
+  };
 }
 
 module.exports = FollowController;

@@ -65,8 +65,8 @@ class AuthController {
   };
   rtVerify = async (req, res, next) => {
     try {
-      const { refreshToken } = req.cookies;
-      const { userId } = req.body;
+      const { refreshToken, userId } = req.headers || req.cookies;
+      // const { userId } = req.body;
 
       // 사용되지 않는 변수 Rt 정의 x
       await this.authService.rtVerify(refreshToken);

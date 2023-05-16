@@ -13,11 +13,11 @@ module.exports = (sequelize, DataTypes) => {
 
       this.belongsTo(models.Users, {
         targetKey: "userId",
-        foreignKey: "UserId",
+        foreignKey: "followUserId",
       });
       this.belongsTo(models.Users, {
         targetKey: "userId",
-        foreignKey: "followUserId",
+        foreignKey: "UserId",
       });
     }
   }
@@ -33,16 +33,16 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         type: Sequelize.INTEGER,
         references: {
-          model: "users",
+          model: "Users",
           key: "userId",
         },
         onDelete: "CASCADE",
       },
       followUserId: {
         allowNull: false,
-        type: Sequelize.NUMBER,
+        type: Sequelize.INTEGER,
         references: {
-          model: "users",
+          model: "Users",
           key: "userId",
         },
         onDelete: "CASCADE",
