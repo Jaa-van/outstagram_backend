@@ -1,5 +1,6 @@
 const { Posts, Users, Likes, Follows } = require("../models");
 const { Op } = require("sequelize");
+const sequelize = require("sequelize");
 
 class PostRepository {
   //롤링페이퍼 생성
@@ -105,6 +106,32 @@ class PostRepository {
       });
       return "likesCreate";
     }
+  };
+
+  getRandomPostsFromDb = async (userId) => {
+    const ramdonPostsFromDb = await Posts.findAll({
+      order: sequelize.literal("RAND()"),
+      limit: 3,
+      include: [
+        {
+          model: Users,
+          attributes: ["nickname", "userPhoto"],
+        },
+      ],
+    });
+    const postsLikes = await Promise.all(
+      ramdonPostsFromDb.map(async (post) => {
+        const postJSON = post.toJSON();
+        const likes = await Likes.findOne({
+          where: {
+            [Op.and]: [{ PostId: postJSON.postId }, { UserId: userId }],
+          },
+        });
+        postJSON.isLiked = !!likes;
+        return postJSON;
+      }),
+    );
+    return postsLikes;
   };
 }
 module.exports = PostRepository;

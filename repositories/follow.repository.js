@@ -1,4 +1,4 @@
-const { Follows } = require("../models");
+const { Follows, Users } = require("../models");
 const { Op } = require("sequelize");
 
 class FollowRepository {
@@ -22,6 +22,13 @@ class FollowRepository {
       });
       return "followCreate";
     }
+  };
+
+  findUserById = async (followUserId) => {
+    const existsUser = await Users.findOne({
+      where: { UserId: followUserId },
+    });
+    return existsUser;
   };
 }
 

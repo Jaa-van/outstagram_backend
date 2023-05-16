@@ -95,6 +95,17 @@ class PostController {
       throw new Error(error.message || "400/게시글 좋아요에 실패하였습니다.");
     }
   };
+
+  getRandomPosts = async (req, res, next) => {
+    try {
+      const { userId } = res.locals.user;
+
+      const randomPosts = await this.postService.getRandomPosts(userId);
+      res.status(200).json(randomPosts);
+    } catch (error) {
+      throw new Error(error.message || "400/게시물 조회에 실패하였습니다.");
+    }
+  };
 }
 
 module.exports = PostController;
