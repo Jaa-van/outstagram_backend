@@ -85,6 +85,32 @@ class PostController {
     }
   };
 
+  //탐색페이지
+  getRandomPosts = async (req, res, next) => {
+    try {
+      const { userId } = res.locals.user;
+
+      const randomPosts = await this.postService.getRandomPosts(userId);
+
+      res.status(200).json(randomPosts);
+    } catch (error) {
+      error.failedApi = "게시물 조회";
+      throw error;
+    }
+  };
+  ///게시물 상세페이지
+  getPost = async (req, res, next) => {
+    try {
+      const { userId } = res.locals.user;
+      const { postId } = req.params;
+      const post = await this.postService.findOnePost(postId, userId);
+      res.status(200).json(post);
+    } catch (error) {
+      error.failedApi = "상세페이지 조회";
+      throw error;
+    }
+  };
+
   // 좋아요 수정
   putLike = async (req, res, next) => {
     try {
@@ -96,19 +122,6 @@ class PostController {
       res.status(200).json({ message: like });
     } catch (error) {
       error.failedApi = "좋아요";
-      throw error;
-    }
-  };
-  //탐색페이지
-  getRandomPosts = async (req, res, next) => {
-    try {
-      const { userId } = res.locals.user;
-
-      const randomPosts = await this.postService.getRandomPosts(userId);
-
-      res.status(200).json(randomPosts);
-    } catch (error) {
-      error.failedApi = "게시물 조회";
       throw error;
     }
   };
