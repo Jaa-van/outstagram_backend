@@ -1,36 +1,41 @@
-const { Posts, Users, Likes, Follows } = require("../models");
 const { Op } = require("sequelize");
 const sequelize = require("sequelize");
 
 class PostRepository {
+  constructor(postsModel, usersModel, likesModel, followsModel) {
+    this.postsModel = postsModel;
+    this.usersModel = usersModel;
+    this.likesModel = likesModel;
+    this.followsModel = followsModel;
+  }
+
   //롤링페이퍼 생성
   createPost = async (userId, content, postPhoto) => {
-    const createPostData = await Posts.create({
+    return await this.postsModel.create({
       UserId: userId,
       content,
       postPhoto,
     });
-    return createPostData;
   };
 
   //게시글 수정
   putPost = async (postId, content, postPhoto) => {
-    const checkPost = await Posts.findByPk(postId);
-    const putPost = await checkPost.update(
+    const checkPost = await this.postsModel.findByPk(postId);
+    return await checkPost.update(
       { postPhoto, content },
       { where: { postId: postId } },
     );
-    return putPost;
   };
 
   //게시글 삭제
   deletePost = async (postId) => {
-    const deletePost = await Posts.findByPk(postId);
+    const deletePost = await this.postsModel.findByPk(postId);
     await deletePost.destroy();
+
     return;
   };
 
-  // 메인페이지
+  // 메인 페이지
 
   // 사용자가 팔로우한 사람들의 ID 가져오기
   getFollowings = async (userId) => {
@@ -42,56 +47,62 @@ class PostRepository {
 
   //사용자들이 팔로우한 유저의 게시물 가져오기
   getPostsByUserIds = async (followedUserIds, userId) => {
-    const findAllFollowsPost = await Posts.findAll({
+    const findAllFollowsPost = await this.postsModel.findAll({
       where: { UserId: followedUserIds },
       include: [
         {
-          model: Users,
+          model: this.usersModel,
           attributes: ["nickname", "userPhoto"],
         },
         {
-          model: Likes,
+          model: this.likesModel,
           attributes: ["likeId"],
         },
       ],
     });
+
     findAllFollowsPost.sort((a, b) => b.createdAt - a.createdAt);
 
     const postsLikes = await Promise.all(
       findAllFollowsPost.map(async (post) => {
         const postJSON = post.toJSON();
-        const likes = await Likes.findOne({
+        const likes = await this.likesModel.findOne({
           where: {
             [Op.and]: [{ PostId: postJSON.postId }, { UserId: userId }],
           },
         });
+        // !!likes === likes ?
         postJSON.isLiked = !!likes;
+
         return postJSON;
       }),
     );
+
     return postsLikes;
   };
 
-  //탐색페이지
+  //탐색 페이지
   getRandomPostsFromDb = async (userId) => {
-    const ramdonPostsFromDb = await Posts.findAll({
+    const ramdonPostsFromDb = await this.postsModel.findAll({
       order: sequelize.literal("RAND()"),
       limit: 3,
       include: [
         {
-          model: Users,
+          model: this.usersModel,
           attributes: ["nickname", "userPhoto"],
         },
       ],
     });
+
     const postsLikes = await Promise.all(
       ramdonPostsFromDb.map(async (post) => {
         const postJSON = post.toJSON();
-        const likes = await Likes.findOne({
+        const likes = await this.likesModel.findOne({
           where: {
             [Op.and]: [{ PostId: postJSON.postId }, { UserId: userId }],
           },
         });
+        // !!likes === likes ?
         postJSON.isLiked = !!likes;
         return postJSON;
       }),
@@ -99,33 +110,35 @@ class PostRepository {
     return postsLikes;
   };
 
-  //게시글좋아요
+  //게시글 좋아요
 
   findOnePost = async (postId) => {
-    const existsPost = await Posts.findOne({
+    return await this.postsModel.findOne({
       where: { postId: postId },
     });
-    return existsPost;
   };
 
   updateLikeDb = async (postId, userId) => {
-    const existsLikesByUser = await Likes.findOne({
+    const existsLikesByUser = await this.likesModel.findOne({
       where: {
         [Op.and]: [{ PostId: postId }, { UserId: userId }],
       },
     });
+
     if (existsLikesByUser) {
-      await Likes.destroy({
+      await this.likesModel.destroy({
         where: {
           [Op.and]: [{ PostId: postId }, { UserId: userId }],
         },
       });
+
       return "likesDestroy";
     } else {
-      await Likes.create({
+      await this.likesModel.create({
         PostId: postId,
         UserId: userId,
       });
+
       return "likesCreate";
     }
   };
