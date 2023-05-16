@@ -94,11 +94,14 @@ class AuthService {
     }
 
     // 변수 선언 대신에 jwt.sign 바로 return
-    return jwt.sign(
-      { userId: loginId.userId }, // JWT 데이터
-      `${env.SECRET_KEY}`, // 비밀키
-      { expiresIn: "2h" },
-    ); // Access Token이 2시간 뒤에 만료되도록 설정합니다.
+    return [
+      jwt.sign(
+        { userId: loginId.userId }, // JWT 데이터
+        `${env.SECRET_KEY}`, // 비밀키
+        { expiresIn: "2h" },
+      ),
+      loginId.userId,
+    ]; // Access Token이 2시간 뒤에 만료되도록 설정합니다.
   };
 
   createAccessTokenById = async (userId) => {

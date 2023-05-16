@@ -43,7 +43,7 @@ class AuthController {
     try {
       const { email, password } = req.body;
       // 가동성을 위해 At -> accessToken, Rt -> refreshToken
-      const accessToken = await this.authService.createAccessToken(
+      const [accessToken, userId] = await this.authService.createAccessToken(
         email,
         password,
       );
@@ -57,6 +57,7 @@ class AuthController {
       res.status(200).json({
         accessToken: `Bearer ${accessToken}`,
         refreshToken: `Bearer ${refreshToken}`,
+        userId,
       });
     } catch (error) {
       error.failedApi = "로그인";
