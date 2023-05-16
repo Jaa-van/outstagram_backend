@@ -4,6 +4,10 @@ class FollowService {
   followRepository = new FollowRepository();
 
   putFollow = async (userId, followUserId) => {
+    if (userId == followUserId)
+      throw new Error("403/자신을 팔로우할 수 없습니다.");
+    const existsUser = await this.followRepository.findUserById(followUserId);
+    if (!existsUser) throw new Error("404/팔로우할 유저가 존재하지 않습니다.");
     const updateFollow = await this.followRepository.updateFollowDb(
       userId,
       followUserId,

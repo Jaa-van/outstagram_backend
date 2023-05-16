@@ -21,5 +21,6 @@ router.put("/posts/:postId", authMiddleware, postController.putPost);
 router.delete("/posts/:postId", authMiddleware, postController.deletePost);
 // 메인페이지
 router.get("/main", authMiddleware, postController.main);
+router.get("/postsrandom", authMiddleware, postController.getRandomPosts);
 
 module.exports = router;

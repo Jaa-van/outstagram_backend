@@ -52,6 +52,12 @@ class PostService {
 
     const result = await Promise.all(
       followedPosts.map(async (post) => {
+        let mine;
+        if (post.UserId == userId) {
+          mine = true;
+        } else {
+          mine = false;
+        }
         return {
           postId: post.postId,
           UserId: post.UserId,
@@ -61,7 +67,9 @@ class PostService {
           commentsCount: post.commentsCount,
           nickname: post.User.nickname,
           userPhoto: post.User.userPhoto,
+          mine: mine,
           isliked: post.isLiked,
+          follow: true,
         };
       }),
     );
@@ -69,14 +77,44 @@ class PostService {
   };
 
   // return FollowPost;
+
+  //게시글좋아요
+  putLike = async (postId, userId) => {
+    const existsPost = await this.postRepository.findOnePost(postId);
+    if (!existsPost) throw new Error("404/게시글이 존재하지 않습니다.");
+    const updatedLike = await this.postRepository.updateLikeDb(postId, userId);
+    if (updatedLike == "likesCreate")
+      return "게시글의 좋아요를 등록하였습니다.";
+    else return "게시글의 좋아요를 취소하였습니다.";
+  };
+
+  getRandomPosts = async (userId) => {
+    const randomPosts = await this.postRepository.getRandomPostsFromDb(userId);
+    const result = await Promise.all(
+      randomPosts.map(async (post) => {
+        let mine;
+        if (post.UserId == userId) {
+          mine = true;
+        } else {
+          mine = false;
+        }
+        return {
+          postId: post.postId,
+          UserId: post.UserId,
+          content: post.content,
+          postPhoto: post.postPhoto,
+          likesCount: post.likesCount,
+          commentsCount: post.commentsCount,
+          nickname: post.User.nickname,
+          userPhoto: post.User.userPhoto,
+          mine: mine,
+          isliked: post.isLiked,
+          follow: true,
+        };
+      }),
+    );
+    return result;
+  };
 }
-//게시글좋아요
-putLike = async (postId, userId) => {
-  const existsPost = await this.postRepository.findOnePost(postId);
-  if (!existsPost) throw new Error("404/게시글이 존재하지 않습니다.");
-  const updatedLike = await this.postRepository.updateLikeDb(postId, userId);
-  if (updatedLike == "likesCreate") return "게시글의 좋아요를 등록하였습니다.";
-  else return "게시글의 좋아요를 취소하였습니다.";
-};
 
 module.exports = PostService;
