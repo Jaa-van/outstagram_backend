@@ -31,10 +31,6 @@ class PostRepository {
   };
 
   // 메인페이지
-  // 내가 팔로우한 유저 조회
-  // findAllFollowUsers = async (userId) => {
-  //   return await Follows.findAll({ where: { UserId: userId } });
-  // };
 
   // 사용자가 팔로우한 사람들의 ID 가져오기
   getFollowings = async (userId) => {
@@ -59,11 +55,37 @@ class PostRepository {
         },
       ],
     });
-
     findAllFollowsPost.sort((a, b) => b.createdAt - a.createdAt);
 
     const postsLikes = await Promise.all(
       findAllFollowsPost.map(async (post) => {
+        const postJSON = post.toJSON();
+        const likes = await Likes.findOne({
+          where: {
+            [Op.and]: [{ PostId: postJSON.postId }, { UserId: userId }],
+          },
+        });
+        postJSON.isLiked = !!likes;
+        return postJSON;
+      }),
+    );
+    return postsLikes;
+  };
+
+  //탐색페이지
+  getRandomPostsFromDb = async (userId) => {
+    const ramdonPostsFromDb = await Posts.findAll({
+      order: sequelize.literal("RAND()"),
+      limit: 3,
+      include: [
+        {
+          model: Users,
+          attributes: ["nickname", "userPhoto"],
+        },
+      ],
+    });
+    const postsLikes = await Promise.all(
+      ramdonPostsFromDb.map(async (post) => {
         const postJSON = post.toJSON();
         const likes = await Likes.findOne({
           where: {
@@ -106,32 +128,6 @@ class PostRepository {
       });
       return "likesCreate";
     }
-  };
-
-  getRandomPostsFromDb = async (userId) => {
-    const ramdonPostsFromDb = await Posts.findAll({
-      order: sequelize.literal("RAND()"),
-      limit: 3,
-      include: [
-        {
-          model: Users,
-          attributes: ["nickname", "userPhoto"],
-        },
-      ],
-    });
-    const postsLikes = await Promise.all(
-      ramdonPostsFromDb.map(async (post) => {
-        const postJSON = post.toJSON();
-        const likes = await Likes.findOne({
-          where: {
-            [Op.and]: [{ PostId: postJSON.postId }, { UserId: userId }],
-          },
-        });
-        postJSON.isLiked = !!likes;
-        return postJSON;
-      }),
-    );
-    return postsLikes;
   };
 }
 module.exports = PostRepository;
