@@ -15,6 +15,9 @@ router.post(
   postController.createPost,
 );
 
+// 게시물 생성시 유저 정보 get
+router.get("/posts", authMiddleware, postController.getUserData);
+
 // 좋아요 수정
 router.put("/posts/:postId/like", authMiddleware, postController.putLike);
 // 게시물 수정

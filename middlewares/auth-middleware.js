@@ -7,7 +7,7 @@ const { Users } = require("../models");
 
 module.exports = async (req, res, next) => {
   console.log(req.headers);
-  const { accessToken } = req.headers;
+  const { accessToken } = req.cookies;
   // access token 이 존재하지 않는 경우 로그인 페이지로 이동
   console.log(accessToken);
   if (!accessToken) {

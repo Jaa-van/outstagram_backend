@@ -13,6 +13,11 @@ class AuthRepository {
       where: { email },
     });
   };
+  findUserById = async (userId) => {
+    return await this.usersModel.findOne({
+      where: { userId },
+    });
+  };
   findByNickname = async (nickname) => {
     return await this.usersModel.findOne({
       where: { nickname },

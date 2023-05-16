@@ -112,6 +112,17 @@ class PostController {
       throw error;
     }
   };
+
+  getUserData = async (req, res, next) => {
+    try {
+      const { userId } = res.locals.user;
+      const userData = await this.postService.getUserData(userId);
+      res.status(200).json(userData);
+    } catch (error) {
+      error.failedApi = "유저 조회";
+      throw error;
+    }
+  };
 }
 
 module.exports = PostController;
