@@ -13,8 +13,6 @@ class SearchController {
 
       const result = await this.searchService.searchUsersAndPosts(search);
 
-      console.log(result);
-
       res.status(200).json(result);
     } catch (error) {
       error.failedApi = "검색";

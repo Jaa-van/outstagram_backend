@@ -82,6 +82,10 @@ class PostRepository {
     return postsLikes;
   };
 
+  getPostsOfUserId = async (userId) => {
+    return await this.postsModel.findAll({ where: { UserId: userId } });
+  };
+
   commentsCount = async (postId) => {
     return await this.commentsModel.count({ where: { PostId: postId } });
   };

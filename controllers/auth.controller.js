@@ -27,7 +27,6 @@ class AuthController {
     try {
       const { mail } = req.body;
       let authNum = Math.random().toString().substring(2, 8);
-      console.log(mail, "여기다 이자식아", authNum);
       const authMailWithNum = await this.authService.sendAuthMail(
         mail,
         authNum,

@@ -10,9 +10,6 @@ module.exports = async (req, res, next) => {
     ? req.headers.accesstoken
     : req.cookies.accessToken;
 
-  // 액세스 토큰 출력해보기
-  // console.log(`\x1b[33m ACCESS_TOKEN (middlewares/auth-middleware.js): ${accessToken} \x1b[0m`);
-
   // access token 이 존재하지 않는 경우 로그인 페이지로 이동
   if (!accessToken) {
     throw new Error("400/Access Token이 존재하지 않습니다.");

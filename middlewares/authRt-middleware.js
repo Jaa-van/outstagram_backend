@@ -37,7 +37,6 @@ module.exports = async (req, res, next) => {
     const accessTokenId = await redisClientRepository.getRefreshToken(
       refreshToken,
     );
-    console.log(accessTokenId);
 
     if (!accessTokenId) {
       throw new Error("419/refresh Token의 정보가 서버에 존재하지 않습니다.");
@@ -67,7 +66,6 @@ module.exports = async (req, res, next) => {
     where: { userId: userId },
   });
 
-  console.log(user);
   res.locals.user = user;
 
   console.log(`${userId}의 Payload 를 가진 Token이 성공적으로 인증되었습니다.`);
