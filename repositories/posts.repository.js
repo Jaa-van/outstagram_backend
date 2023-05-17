@@ -93,7 +93,6 @@ class PostRepository {
   getRandomPostsFromDb = async (userId) => {
     const ramdonPostsFromDb = await this.postsModel.findAll({
       order: sequelize.literal("RAND()"),
-      limit: 3,
       include: [
         {
           model: this.usersModel,
