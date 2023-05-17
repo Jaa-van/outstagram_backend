@@ -1,11 +1,11 @@
-const CommentService = require("../services/comments.service.js");
-// 사용하지 않는 Posts 모듈 삭제
+const CommentsService = require("../services/comments.service.js");
+const PostsService = require("../services/posts.service.js");
 
-// Comment의 컨트롤러(controller) 역할을 하는 클래스
-class CommentController {
-  commentService = new CommentService(); // Comment 서비스를 클래스를 컨트롤러 클래스의 멤버 변수로 할당합니다.
+class CommentsController {
+  commentsService = new CommentsService();
+  postsService = new PostsService();
 
-  // 메인 페이지 댓글 생성 & 게시물 상세 조회 댓글 생성
+  // 댓글 생성
   createComment = async (req, res, next) => {
     try {
       const { userId } = res.locals.user;
@@ -16,79 +16,65 @@ class CommentController {
         throw new Error("403/댓글 작성에 실패하였습니다.");
       }
 
-      const findOnePost = await this.commentService.findOnePost(postId); // service 계층에 구현된 createComment 로직을 실행합니다.
-      if (!findOnePost) {
+      const post = await this.postsService.findPostByPostId(postId);
+      if (!post) {
         throw new Error("403/게시물이 존재하지 않습니다.");
       }
 
-      const createcommentData = await this.commentService.createComment(
-        userId,
-        postId,
-        comment,
-      );
+      await this.commentsService.createComment(userId, postId, comment);
 
-      res.status(201).json(createcommentData);
+      res.status(201).json({ message: "댓글을 작성하였습니다." });
     } catch (error) {
       error.failedApi = "댓글 작성";
       throw error;
     }
   };
 
-  // 게시물 상세 조회 들어가서 댓글 조회
-  searchComment = async (req, res, next) => {
+  // 전체 댓글 조회
+  readComments = async (req, res, next) => {
     try {
       const { postId } = req.params;
-      const findOnePost = await this.commentService.findOnePost(postId);
 
-      // 게시물 유효성 검사
-      if (!findOnePost) {
+      const post = await this.postsService.findPostByPostId(postId);
+      if (!post) {
         throw new Error("403/게시물이 존재하지 않습니다.");
       }
 
-      const findCommentsData = await this.commentService.findComments(postId);
-      // 댓글 조회
-      if (!findCommentsData) {
+      const comments = await this.commentsService.findCommentsByPostId(postId);
+      if (!comments) {
         throw new Error("403/댓글이 존재하지 않습니다.");
       }
 
-      return res.status(200).json({ commentsData: findCommentsData });
+      return res.status(200).json({ commentsData: comments });
     } catch (error) {
       error.faiedApi = "댓글 조회";
       throw error;
     }
   };
 
-  // 게시물 상세 조회 들어가서 댓글 삭제
+  // 댓글 삭제
   deleteComment = async (req, res, next) => {
-    const { userId } = res.locals.user;
-    const { postId, commentId } = req.params;
-
     try {
-      const findOnePost = await this.commentService.findOnePost(postId);
-      // 게시물 유효성 검사
-      if (!findOnePost) {
+      const { userId } = res.locals.user;
+      const { postId, commentId } = req.params;
+
+      const post = await this.postsService.findPostByPostId(postId);
+      if (!post) {
         throw new Error("403/게시물이 존재하지 않습니다.");
       }
 
-      const findOneComment = await this.commentService.findOneComment(
-        commentId,
-      );
-      // 댓글 하나 찾기
-      if (!findOneComment) {
+      const comment = await this.commentsService.findCommentById(commentId);
+      if (!comment) {
         throw new Error("403/댓글이 존재하지 않습니다.");
       }
 
-      if (findOneComment.UserId !== userId) {
+      if (comment.UserId !== userId) {
         throw new Error("403/게시글 삭제 권한이 존재하지 않습니다.");
       }
 
-      const deleteCommentData = await this.commentService.deleteComment(
-        userId,
-        postId,
-        commentId,
-      );
+      await this.commentsService.deleteComment(userId, postId, commentId);
 
-      return res.status(200).json(deleteCommentData);
+      return res.status(200).json({ message: "댓글을 지웠습니다." });
     } catch (error) {
       error.faiedApi = "댓글 삭제";
       throw error;
@@ -96,4 +82,4 @@ class CommentController {
   };
 }
 
-module.exports = CommentController;
+module.exports = CommentsController;

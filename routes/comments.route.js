@@ -6,25 +6,16 @@ const authMiddleware = require("../middlewares/auth-middleware");
 
 const commentController = new CommentController();
 
-//#Controller? clients와 method로 소통하는 구간// 식당에서 홀 구역
-
-// 메인 페이지 댓글 생성 & 게시물 상세 조회 댓글 생성
 router.post(
-  "/posts/:postId/comments",
+  "/:postId/comments",
   authMiddleware,
   commentController.createComment,
 );
 
-// 게시물 상세 조회 들어가서 댓글 조회
-router.get(
-  "/posts/:postId/comments",
-  authMiddleware,
-  commentController.searchComment,
-);
+router.get("/:postId/comments", authMiddleware, commentController.readComments);
 
-// 게시물 상세 조회 들어가서 댓글 삭제
 router.delete(
-  "/posts/:postId/comments/:commentId",
+  "/:postId/comments/:commentId",
   authMiddleware,
   commentController.deleteComment,
 );

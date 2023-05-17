@@ -4,9 +4,14 @@ const router = express.Router();
 const postsRouter = require("./posts.route.js");
 const authRouter = require("./auth.route.js");
 const commentsRouter = require("./comments.route.js");
-const followRouter = require("./follow.route");
+const followsRouter = require("./follows.route.js");
 const searchRouter = require("./search.route");
 
-router.use("/", [authRouter, postsRouter, commentsRouter, followRouter, searchRouter]);
+// /posts로 시작하는 url들을 처리하는 router
+router.use("/posts", [postsRouter, commentsRouter]);
+router.use("/auth", authRouter);
+router.use("/users", followsRouter);
+
+router.use("/", [searchRouter]);
 
 module.exports = router;

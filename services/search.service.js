@@ -1,13 +1,13 @@
 const PostRepository = require("../repositories/posts.repository");
-const AuthRepository = require("../repositories/auth.repository");
+const UsersRepository = require("../repositories/users.repository");
 const { Posts, Users, Likes, Follows, Comments } = require("../models");
 
 class SearchService {
   postRepository = new PostRepository(Posts, Users, Likes, Follows, Comments);
-  authRepository = new AuthRepository(Users);
+  usersRepository = new UsersRepository(Users);
 
   searchUsersAndPosts = async (search) => {
-    const detailedUsers = await this.authRepository.findNicknamesBySearch(
+    const detailedUsers = await this.usersRepository.findNicknamesBySearch(
       search,
     );
 

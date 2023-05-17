@@ -31,7 +31,7 @@ module.exports = async (req, res, next) => {
 
   res.locals.user = user;
 
-  console.log(`${userId}의 Payload 를 가진 Token이 성공적으로 인증되었습니다.`);
+  // console.log(`${userId}의 Payload 를 가진 Token이 성공적으로 인증되었습니다.`);
 
   next();
 };

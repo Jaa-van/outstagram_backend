@@ -2,7 +2,6 @@ const express = require("express");
 const router = express.Router();
 
 const uploadUserPhoto = require("../modules/s3_userPhoto.js");
-
 const AuthController = require("../controllers/auth.controller");
 
 const authController = new AuthController();
@@ -21,6 +20,6 @@ router.post(
 );
 
 //refresh token verify 기능
-router.post("/rtVerify", authController.rtVerify);
+router.post("/rtVerify", authController.verifyRefreshToken);
 
 module.exports = router;
