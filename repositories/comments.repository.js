@@ -16,7 +16,7 @@ class CommentRepository {
     });
 
     // 댓글 수(count)를 증가시킵니다.
-    await this.postsModel.increment("commentsCount", { where: { postId } });
+    // await this.postsModel.increment("commentsCount", { where: { postId } });
 
     return createCommentData;
   };
