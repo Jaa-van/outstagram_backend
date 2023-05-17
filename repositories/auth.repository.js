@@ -1,3 +1,13 @@
+const { Op } = require("sequelize");
+
+// Model.findAll({
+//   where: {
+//     yourField: {
+//       [Op.like]: 'a%t'
+//     }
+//   }
+// });
+
 class AuthRepository {
   constructor(usersModel) {
     this.usersModel = usersModel;
@@ -21,6 +31,15 @@ class AuthRepository {
   findByNickname = async (nickname) => {
     return await this.usersModel.findOne({
       where: { nickname },
+    });
+  };
+  findNicknamesBySearch = async (search) => {
+    return await this.usersModel.findAll({
+      where: {
+        nickname: {
+          [Op.like]: `%${search}%`,
+        },
+      },
     });
   };
   createId = async (email, name, nickname, password, userPhoto) => {
