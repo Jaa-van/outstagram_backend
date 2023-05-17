@@ -2,11 +2,12 @@ const { Op } = require("sequelize");
 const sequelize = require("sequelize");
 
 class PostRepository {
-  constructor(postsModel, usersModel, likesModel, followsModel) {
+  constructor(postsModel, usersModel, likesModel, followsModel, commentsModel) {
     this.postsModel = postsModel;
     this.usersModel = usersModel;
     this.likesModel = likesModel;
     this.followsModel = followsModel;
+    this.commentsModel = commentsModel;
   }
 
   //롤링페이퍼 생성
@@ -79,6 +80,13 @@ class PostRepository {
     );
 
     return postsLikes;
+  };
+
+  commentsCount = async (postId) => {
+    return await this.commentsModel.count({ where: { PostId: postId } });
+  };
+  likesCount = async (postId) => {
+    return await this.likesModel.count({ where: { PostId: postId } });
   };
 
   //탐색 페이지
