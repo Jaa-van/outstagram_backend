@@ -38,7 +38,7 @@ class CommentController {
   searchComment = async (req, res, next) => {
     try {
       const { postId } = req.params;
-
+      console.log(postId)
       const findOnePost = await this.commentService.findOnePost(postId);
 
       // 게시물 유효성 검사
