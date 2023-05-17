@@ -116,9 +116,8 @@ class PostController {
     try {
       const { postId } = req.params;
       const { userId } = res.locals.user;
-
       const like = await this.postService.putLike(postId, userId);
-
+	    
       res.status(200).json({ message: like });
     } catch (error) {
       error.failedApi = "좋아요";
