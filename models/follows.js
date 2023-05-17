@@ -13,11 +13,11 @@ module.exports = (sequelize, DataTypes) => {
 
       this.belongsTo(models.Users, {
         targetKey: "userId",
-        foreignKey: "followUserId",
+        foreignKey: "UserId",
       });
       this.belongsTo(models.Users, {
         targetKey: "userId",
-        foreignKey: "UserId",
+        foreignKey: "followUserId",
       });
     }
   }

@@ -19,10 +19,15 @@ class FollowController {
 
   // 유저를 팔로우하는 사람들 조회
   getFollower = async (req, res, next) => {
-    const myUserId = req.params.userId;
+    try {
+      const myUserId = req.params.userId;
 
-    const followerList = await this.followService.getFollower(myUserId);
-    res.status(200).json(followerList);
+      const followerList = await this.followService.getFollower(myUserId);
+      res.status(200).json(followerList);
+    } catch (error) {
+      error.failedApi = "팔로우 조회";
+      throw error;
+    }
   };
 }
 

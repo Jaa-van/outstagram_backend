@@ -38,22 +38,22 @@ class FollowRepository {
   };
 
   // // 내가 팔로우 누른 사람들의 리스트
-  // getFollowersByFollowUserId = async (myUserId) => {
-  //   const followerList = await this.usersModel.findAll({
-  //     attributes: ["name", "nickname", "userPhoto"],
-  //     include: [
-  //       {
-  //         model: this.followsModel,
-  //         attributes: [],
-  //         required: true,
-  //         where: {
-  //           UserId: myUserId,
-  //         },
-  //       },
-  //     ],
-  //   });
-  //   return followerList;
-  // };
+  getFollowersByFollowUserId = async (myUserId) => {
+    const followerList = await this.usersModel.findAll({
+      attributes: ["name", "nickname", "userPhoto"],
+      include: [
+        {
+          model: this.followsModel,
+          attributes: [],
+          required: true,
+          where: {
+            UserId: myUserId,
+          },
+        },
+      ],
+    });
+    return followerList;
+  };
 
   // 나를 팔로우 한 사람들의 리스트
 
@@ -67,22 +67,22 @@ class FollowRepository {
 
   // Follows.UserId = User.userId => 얘는 어디갔음??
 
-  getFollowersByFollowUserId = async (myUserId) => {
-    const followerList = await this.followsModel.findAll({
-      include: [
-        {
-          model: this.usersModel,
-          attributes: ["name", "nickname", "userPhoto"],
-          required: true,
-          where: {
-            userId: myUserId,
-          },
-          on: { userId: sequelize.col("Follows.followUserId") },
-        },
-      ],
-    });
-    return followerList;
-  };
+  // getFollowersByFollowUserId = async (myUserId) => {
+  //   const followerList = await this.followsModel.findAll({
+  //     include: [
+  //       {
+  //         model: this.usersModel,
+  //         attributes: ["name", "nickname", "userPhoto"],
+  //         required: true,
+  //         where: {
+  //           userId: myUserId,
+  //         },
+  //         on: { userId: sequelize.col("Follows.followUserId") },
+  //       },
+  //     ],
+  //   });
+  //   return followerList;
+  // };
 
   // getFollowersByFollowUserId = async (myUserId) => {
   //   const followerList = await this.usersModel.findAll({
