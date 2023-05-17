@@ -46,14 +46,6 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         type: Sequelize.STRING,
       },
-      likesCount: {
-        type: Sequelize.INTEGER,
-        defaultValue: 0,
-      },
-      commentsCount: {
-        type: Sequelize.INTEGER,
-        defaultValue: 0,
-      },
       postPhoto: {
         type: Sequelize.STRING,
         defaultValue:
