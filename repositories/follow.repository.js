@@ -37,6 +37,17 @@ class FollowRepository {
     });
   };
 
+  checkIfFollowing = async (myUserId, userId) => {
+    const row = await this.followsModel.findOne({
+      where: {
+        UserId: myUserId,
+        followUserId: userId,
+      },
+    });
+
+    return row ? true : false;
+  };
+
   // // 내가 팔로우 누른 사람들의 리스트
   getFollowersByFollowUserId = async (myUserId) => {
     const followerList = await this.usersModel.findAll({

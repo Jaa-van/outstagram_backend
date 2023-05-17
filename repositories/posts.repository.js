@@ -101,6 +101,16 @@ class PostRepository {
     return postsLikes;
   };
 
+  getPostsOfUserId = async (userId) => {
+    return await this.postsModel.findAll({ where: { UserId: userId } });
+  };
+
+  commentsCount = async (postId) => {
+    return await this.commentsModel.count({ where: { PostId: postId } });
+  };
+  likesCount = async (postId) => {
+    return await this.likesModel.count({ where: { PostId: postId } });
+  };
 
   //탐색 페이지
   getRandomPostsFromDb = async (userId) => {

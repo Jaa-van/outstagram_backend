@@ -3,6 +3,20 @@ const FollowService = require("../services/follow.service");
 class FollowController {
   followService = new FollowService();
 
+  getPageByUserId = async (req, res, next) => {
+    try {
+      const myUserId = res.locals.user.userId;
+      const { userId } = req.params;
+
+      const page = await this.followService.getPageByUserId(myUserId, userId);
+
+      res.status(200).json({ page });
+    } catch (error) {
+      error.failedApi = "유저 페이지 조회";
+      throw error;
+    }
+  };
+
   putFollow = async (req, res, next) => {
     try {
       const followUserId = req.params.userId;

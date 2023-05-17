@@ -6,6 +6,8 @@ const authMiddleware = require("../middlewares/auth-middleware");
 
 const followController = new FollowController();
 
+router.get("/users/:userId", authMiddleware, followController.getPageByUserId);
+
 router.put("/users/:userId/follow", authMiddleware, followController.putFollow);
 
 router.get("/users/:userId/follower", followController.getFollower);
