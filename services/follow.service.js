@@ -32,6 +32,13 @@ class FollowService {
       await this.followRepository.getFollowersByFollowUserId(myUserId);
     return followerListFromDb;
   };
+
+  getFollow = async (myUserId) => {
+    const followListFromDb = await this.followRepository.getFollowByUserId(
+      myUserId,
+    );
+    return followListFromDb;
+  };
 }
 
 module.exports = FollowService;

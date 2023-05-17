@@ -27,6 +27,7 @@ class AuthController {
     try {
       const { mail } = req.body;
       let authNum = Math.random().toString().substring(2, 8);
+      console.log(mail, "여기다 이자식아", authNum);
       const authMailWithNum = await this.authService.sendAuthMail(
         mail,
         authNum,
@@ -66,15 +67,15 @@ class AuthController {
   };
   rtVerify = async (req, res, next) => {
     try {
-	  // 리프레시 토큰 받아오는 부분 수정
+      // 리프레시 토큰 받아오는 부분 수정
       // const { refreshToken, userId } = req.headers || req.cookies;
       // console.log(req.headers);
       // const { userId } = req.body;
- 	  const refreshToken = req.headers.refreshtoken;
-	  const userId = req.headers.userId;
+      const refreshToken = req.headers.refreshtoken;
+      const userId = req.headers.userId;
 
-	  // 리프레시 토큰 출력해보기
-	  console.log(`\x1b[32mREFRESH_TOKEN: ${refreshToken}\x1b[0m`);
+      // 리프레시 토큰 출력해보기
+      console.log(`\x1b[32mREFRESH_TOKEN: ${refreshToken}\x1b[0m`);
 
       // 사용되지 않는 변수 Rt 정의 x
       await this.authService.rtVerify(refreshToken);

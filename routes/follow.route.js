@@ -10,4 +10,6 @@ router.put("/users/:userId/follow", authMiddleware, followController.putFollow);
 
 router.get("/users/:userId/follower", followController.getFollower);
 
+router.get("/users/:userId/follow", followController.getFollow);
+
 module.exports = router;

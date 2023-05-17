@@ -29,6 +29,13 @@ class FollowController {
       throw error;
     }
   };
+
+  getFollow = async (req, res, next) => {
+    const myUserId = req.params.userId;
+
+    const followList = await this.followService.getFollow(myUserId);
+    res.status(200).json(followList);
+  };
 }
 
 module.exports = FollowController;

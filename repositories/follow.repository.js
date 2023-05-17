@@ -55,6 +55,26 @@ class FollowRepository {
     return followerList;
   };
 
+  getFollowByUserId = async (myUserId) => {
+    const follows = await this.usersModel.findAll({
+      attributes: ["name", "nickname", "userPhoto"],
+      include: [
+        {
+          model: this.followsModel,
+          attributes: [],
+          required: true,
+          where: { followUserId: myUserId },
+          on: {
+            [Op.and]: sequelize.literal(
+              "`Users`.`userId` = `Follows`.`UserId`",
+            ),
+          },
+        },
+      ],
+    });
+    return follows;
+  };
+
   // 나를 팔로우 한 사람들의 리스트
 
   // 의도: 나를 팔로우한 유저들의 id(followUserId)를 Follows 테이블에서 가져와서
