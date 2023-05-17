@@ -29,7 +29,6 @@ class PostService {
     const followedUserIds = await followings.map(
       (following) => following.followUserId,
     );
-
     const followedPosts = await this.postRepository.getPostsByUserIds(
       followedUserIds,
       userId,
@@ -37,24 +36,20 @@ class PostService {
 
     const result = await Promise.all(
       followedPosts.map(async (post) => {
-        const commentsCount = await this.postRepository.commentsCount(
-          post.postId,
-        );
-        const likesCount = await this.postRepository.likesCount(post.postId);
-
         let mine;
         if (post.UserId == userId) {
           mine = true;
         } else {
           mine = false;
         }
+
         const result = {
           postId: post.postId,
           UserId: post.UserId,
           content: post.content,
           postPhoto: post.postPhoto,
-          likesCount: likesCount,
-          commentsCount: commentsCount,
+          likesCount: post.likesCount,
+          commentsCount: post.commentsCount,
           nickname: post.User.nickname,
           userPhoto: post.User.userPhoto,
           mine: mine,
@@ -66,6 +61,7 @@ class PostService {
     );
     return result;
   };
+
 
   //탐색페이지
   getRandomPosts = async (userId) => {
@@ -83,10 +79,6 @@ class PostService {
         } else {
           followed = true;
         }
-        const commentsCount = await this.postRepository.commentsCount(
-          post.postId,
-        );
-        const likesCount = await this.postRepository.likesCount(post.postId);
 
         let mine;
         if (post.UserId == userId) {
@@ -99,8 +91,8 @@ class PostService {
           UserId: post.UserId,
           content: post.content,
           postPhoto: post.postPhoto,
-          likesCount: likesCount,
-          commentsCount: commentsCount,
+          likesCount: post.likesCount,
+          commentsCount: post.commentsCount,
           nickname: post.User.nickname,
           userPhoto: post.User.userPhoto,
           mine: mine,
@@ -113,10 +105,9 @@ class PostService {
   };
 
   //게시물 상세페이지
-
   findOnePost = async (postId, userId) => {
-    const post = await this.postRepository.getPost(postId);
 
+    const post = await this.postRepository.getPost(postId);
     const follow = await this.postRepository.postUserFollow(
       post.UserId,
       userId,
@@ -133,14 +124,13 @@ class PostService {
     } else {
       mine = false;
     }
-
+    // console.log(post.dataValues.postId, "here~~~~~~~~~~~~~~~~~~~~~~~~~~~~~`")
     const result = {
       postId: post.postId,
       UserId: post.UserId,
       content: post.content,
       postPhoto: post.postPhoto,
-      likesCount: post.likesCount,
-      commentsCount: post.commentsCount,
+      likesCount: post.dataValues.likesCount,
       nickname: post.User.nickname,
       userPhoto: post.User.userPhoto,
       mine: mine,

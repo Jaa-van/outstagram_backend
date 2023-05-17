@@ -6,7 +6,7 @@ class SearchController {
   //게시물 생성
   searchUsersAndPosts = async (req, res, next) => {
     try {
-      const { search } = req.body;
+      const { search } = req.query;
       if (!search || search === "" || typeof search !== "string") {
         throw new Error("419/검색어의 형식이 올바르지 않습니다.");
       }

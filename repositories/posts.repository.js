@@ -40,27 +40,46 @@ class PostRepository {
 
   // 사용자가 팔로우한 사람들의 ID 가져오기
   getFollowings = async (userId) => {
-    return await this.followsModel.findAll({
+    return this.followsModel.findAll({
       where: { UserId: userId },
       attributes: ["followUserId"],
     });
   };
 
-  //사용자들이 팔로우한 유저의 게시물 가져오기
+  // //사용자들이 팔로우한 유저의 게시물 가져오기
   getPostsByUserIds = async (followedUserIds, userId) => {
     const findAllFollowsPost = await this.postsModel.findAll({
       where: { UserId: followedUserIds },
+      attributes: [
+        "postId",
+        "UserId",
+        "content",
+        "postPhoto",
+        "createdAt",
+        "updatedAt",
+        [
+          sequelize.literal(
+            "(SELECT COUNT(*) FROM Likes WHERE Likes.PostId = Posts.postId)"
+          ),
+          "likesCount",
+        ],
+        [
+          sequelize.literal(
+            "(SELECT COUNT(*) FROM Comments WHERE Comments.PostId = Posts.postId)"
+          ),
+          "commentsCount",
+        ],
+      ],
       include: [
         {
           model: this.usersModel,
           attributes: ["nickname", "userPhoto"],
         },
-        {
-          model: this.likesModel,
-          attributes: ["likeId"],
-        },
       ],
+      // group: ['Posts.postId'],
+      // distinct: true,
     });
+
 
     findAllFollowsPost.sort((a, b) => b.createdAt - a.createdAt);
 
@@ -97,6 +116,27 @@ class PostRepository {
   getRandomPostsFromDb = async (userId) => {
     const ramdonPostsFromDb = await this.postsModel.findAll({
       order: sequelize.literal("RAND()"),
+      // limit: 6,
+      attributes: [
+        "postId",
+        "UserId",
+        "content",
+        "postPhoto",
+        "createdAt",
+        "updatedAt",
+        [
+          sequelize.literal(
+            "(SELECT COUNT(*) FROM Likes WHERE Likes.PostId = Posts.postId)"
+          ),
+          "likesCount",
+        ],
+        [
+          sequelize.literal(
+            "(SELECT COUNT(*) FROM Comments WHERE Comments.PostId = Posts.postId)"
+          ),
+          "commentsCount",
+        ],
+      ],
       include: [
         {
           model: this.usersModel,
@@ -104,6 +144,8 @@ class PostRepository {
         },
       ],
     });
+
+    // ramdonPostsFromDb.sort((a, b) => b.createdAt - a.createdAt);
 
     const postsLikes = await Promise.all(
       ramdonPostsFromDb.map(async (post) => {
@@ -115,9 +157,11 @@ class PostRepository {
         });
         // !!likes === likes ?
         postJSON.isLiked = !!likes;
+
         return postJSON;
       }),
     );
+
     return postsLikes;
   };
 
@@ -133,6 +177,20 @@ class PostRepository {
   getPost = async (postId) => {
     const postInfo = await this.postsModel.findOne({
       where: { postId },
+      attributes: [
+        "postId",
+        "UserId",
+        "content",
+        "postPhoto",
+        "createdAt",
+        "updatedAt",
+        [
+          sequelize.literal(
+            "(SELECT COUNT(*) FROM Likes WHERE Likes.PostId = Posts.postId)"
+          ),
+          "likesCount",
+        ],
+      ],
       include: [
         {
           model: this.usersModel,
