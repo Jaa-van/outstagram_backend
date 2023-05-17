@@ -4,6 +4,8 @@ const { Posts, Users, Likes, Follows, Comments } = require("../models");
 
 class PostService {
   postRepository = new PostRepository(Posts, Users, Likes, Follows, Comments);
+  // authRepository 인스턴스 생성
+  authRepository = new AuthRepository(Users);
   //게시글 생성
   createPost = async (userId, content, postPhoto) => {
     return await this.postRepository.createPost(userId, content, postPhoto);

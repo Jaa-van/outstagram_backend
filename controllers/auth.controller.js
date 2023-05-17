@@ -66,9 +66,15 @@ class AuthController {
   };
   rtVerify = async (req, res, next) => {
     try {
-      const { refreshToken, userId } = req.headers || req.cookies;
-      console.log(req.headers);
+	  // 리프레시 토큰 받아오는 부분 수정
+      // const { refreshToken, userId } = req.headers || req.cookies;
+      // console.log(req.headers);
       // const { userId } = req.body;
+ 	  const refreshToken = req.headers.refreshtoken;
+	  const userId = req.headers.userId;
+
+	  // 리프레시 토큰 출력해보기
+	  console.log(`\x1b[32mREFRESH_TOKEN: ${refreshToken}\x1b[0m`);
 
       // 사용되지 않는 변수 Rt 정의 x
       await this.authService.rtVerify(refreshToken);
