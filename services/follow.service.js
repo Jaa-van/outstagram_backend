@@ -93,6 +93,11 @@ class FollowService {
     );
     return followListFromDb;
   };
+
+  getRandomUsers = async () => {
+    const randomUsers = await this.followRepository.getRandomUsersFromDb();
+    return randomUsers;
+  };
 }
 
 module.exports = FollowService;

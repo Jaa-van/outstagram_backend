@@ -50,6 +50,17 @@ class FollowController {
     const followList = await this.followService.getFollow(myUserId);
     res.status(200).json(followList);
   };
+
+  getRandomUsers = async (req, res, next) => {
+    try {
+      const randomUsers = await this.followService.getRandomUsers();
+
+      res.status(200).json(randomUsers);
+    } catch (error) {
+      error.failedApi = "유저 조회";
+      throw error;
+    }
+  };
 }
 
 module.exports = FollowController;

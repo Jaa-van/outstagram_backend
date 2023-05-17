@@ -86,6 +86,14 @@ class FollowRepository {
     return follows;
   };
 
+  getRandomUsersFromDb = async () => {
+    const randomUsersFromDb = await this.usersModel.findAll({
+      order: sequelize.literal("RAND()"),
+      limit: 8,
+      attributes: ["userId", "nickname", "userPhoto"],
+    });
+    return randomUsersFromDb;
+  };
   // 나를 팔로우 한 사람들의 리스트
 
   // 의도: 나를 팔로우한 유저들의 id(followUserId)를 Follows 테이블에서 가져와서
