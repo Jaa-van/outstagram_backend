@@ -171,5 +171,14 @@ class PostRepository {
       return "likesCreate";
     }
   };
+  findPostsBySearch = async (search) => {
+    return await this.postsModel.findAll({
+      where: {
+        content: {
+          [Op.like]: `%${search}%`,
+        },
+      },
+    });
+  };
 }
 module.exports = PostRepository;
