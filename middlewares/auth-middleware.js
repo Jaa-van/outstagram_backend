@@ -6,7 +6,10 @@ const env = process.env;
 const { Users } = require("../models");
 
 module.exports = async (req, res, next) => {
-  const accessToken = req.headers.accesstoken;
+  const accessToken = req.headers.accesstoken
+    ? req.headers.accesstoken
+    : req.cookies.accessToken;
+
   // access token 이 존재하지 않는 경우 로그인 페이지로 이동
   if (!accessToken) {
     throw new Error("400/Access Token이 존재하지 않습니다.");

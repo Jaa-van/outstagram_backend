@@ -1,10 +1,9 @@
 const PostRepository = require("../repositories/posts.repository");
 const AuthRepository = require("../repositories/auth.repository");
-const { Posts, Users, Likes, Follows } = require("../models");
+const { Posts, Users, Likes, Follows, Comments } = require("../models");
 
 class PostService {
-  postRepository = new PostRepository(Posts, Users, Likes, Follows);
-  authRepository = new AuthRepository(Users);
+  postRepository = new PostRepository(Posts, Users, Likes, Follows, Comments);
   //게시글 생성
   createPost = async (userId, content, postPhoto) => {
     return await this.postRepository.createPost(userId, content, postPhoto);
@@ -36,25 +35,31 @@ class PostService {
 
     const result = await Promise.all(
       followedPosts.map(async (post) => {
+        const commentsCount = await this.postRepository.commentsCount(
+          post.postId,
+        );
+        const likesCount = await this.postRepository.likesCount(post.postId);
+
         let mine;
         if (post.UserId == userId) {
           mine = true;
         } else {
           mine = false;
         }
-        return {
+        const result = {
           postId: post.postId,
           UserId: post.UserId,
           content: post.content,
           postPhoto: post.postPhoto,
-          likesCount: post.likesCount,
-          commentsCount: post.commentsCount,
+          likesCount: likesCount,
+          commentsCount: commentsCount,
           nickname: post.User.nickname,
           userPhoto: post.User.userPhoto,
           mine: mine,
           isliked: post.isLiked,
           follow: true,
         };
+        return result;
       }),
     );
     return result;
@@ -66,6 +71,21 @@ class PostService {
 
     const result = await Promise.all(
       randomPosts.map(async (post) => {
+        const follow = await this.postRepository.postUserFollow(
+          post.UserId,
+          userId,
+        );
+        let followed;
+        if (!follow) {
+          followed = false;
+        } else {
+          followed = true;
+        }
+        const commentsCount = await this.postRepository.commentsCount(
+          post.postId,
+        );
+        const likesCount = await this.postRepository.likesCount(post.postId);
+
         let mine;
         if (post.UserId == userId) {
           mine = true;
@@ -77,13 +97,13 @@ class PostService {
           UserId: post.UserId,
           content: post.content,
           postPhoto: post.postPhoto,
-          likesCount: post.likesCount,
-          commentsCount: post.commentsCount,
+          likesCount: likesCount,
+          commentsCount: commentsCount,
           nickname: post.User.nickname,
           userPhoto: post.User.userPhoto,
           mine: mine,
           isliked: post.isLiked,
-          follow: true,
+          follow: followed,
         };
       }),
     );
