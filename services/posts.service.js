@@ -103,6 +103,7 @@ class PostService {
       nickname: post.User.nickname,
       userPhoto: post.User.userPhoto,
       mine: mine,
+      isLiked: post.isLiked,
       follow: followed,
     };
   };

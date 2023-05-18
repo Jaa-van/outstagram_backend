@@ -80,7 +80,7 @@ class AuthController {
       const newAccessToken = await this.authService.createAccessTokenById(
         userId,
       );
-      // console.log("accessToken 을 다시 발급하였습니다!");
+      console.log("accessToken 을 다시 발급하였습니다!");
       res.cookie("accessToken", `Bearer ${newAccessToken}`);
       res.status(200).json({ accessToken: `Bearer ${newAccessToken}` });
     } catch (error) {

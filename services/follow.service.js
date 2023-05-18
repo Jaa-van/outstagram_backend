@@ -54,7 +54,7 @@ class FollowsService {
   };
 
   followAndUnfollow = async (userId, followUserId) => {
-    if (userId === followUserId) {
+    if (userId === Number(followUserId)) {
       throw new Error("403/자신을 팔로우할 수 없습니다.");
     }
 
@@ -75,7 +75,7 @@ class FollowsService {
   };
 
   findUsersByRandom = async () => {
-    const randomUsers = await this.followRepository.findUsersByRandom();
+    const randomUsers = await this.followsRepository.findUsersByRandom();
 
     return randomUsers.map((user) => {
       return {

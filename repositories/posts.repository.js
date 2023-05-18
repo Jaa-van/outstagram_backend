@@ -159,7 +159,7 @@ class PostsRepository {
   };
 
   findPostWithLikeCounts = async (postId) => {
-    return await this.postsModel.findOne({
+    const post = await this.postsModel.findOne({
       where: { postId },
       attributes: [
         "postId",
@@ -182,6 +182,16 @@ class PostsRepository {
         },
       ],
     });
+
+    const like = await this.likesModel.findOne({
+      where: {
+        [Op.and]: [{ PostId: post.postId }, { UserId: post.UserId }],
+      },
+    });
+
+    post.isLiked = !!like;
+
+    return post;
   };
 
   updateLike = async (postId, userId) => {
