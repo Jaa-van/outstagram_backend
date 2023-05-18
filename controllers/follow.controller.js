@@ -43,8 +43,8 @@ class FollowController {
     try {
       const myUserId = req.params.userId;
 
-      const followList = await this.followService.findFollowers(myUserId);
-      res.status(200).json(followList);
+      const followers = await this.followService.findFollowers(myUserId);
+      res.status(200).json(followers);
     } catch (error) {
       error.failedApi = "팔로워 조회";
       throw error;
@@ -56,8 +56,8 @@ class FollowController {
     try {
       const myUserId = req.params.userId;
 
-      const followerList = await this.followService.findFollowings(myUserId);
-      res.status(200).json(followerList);
+      const followings = await this.followService.findFollowings(myUserId);
+      res.status(200).json(followings);
     } catch (error) {
       error.failedApi = "팔로잉 조회";
       throw error;
