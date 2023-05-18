@@ -1,7 +1,7 @@
 const { Op } = require("sequelize");
 const sequelize = require("sequelize");
 
-class PostRepository {
+class PostsRepository {
   constructor(postsModel, usersModel, likesModel, followsModel, commentsModel) {
     this.postsModel = postsModel;
     this.usersModel = usersModel;
@@ -10,7 +10,13 @@ class PostRepository {
     this.commentsModel = commentsModel;
   }
 
-  //롤링페이퍼 생성
+  findPostById = async (postId) => {
+    return await this.postsModel.findOne({
+      where: { postId },
+    });
+  };
+
+  //게시물 생성
   createPost = async (userId, content, postPhoto) => {
     return await this.postsModel.create({
       UserId: userId,
@@ -20,9 +26,8 @@ class PostRepository {
   };
 
   //게시글 수정
-  putPost = async (postId, content, postPhoto) => {
-    const checkPost = await this.postsModel.findByPk(postId);
-    return await checkPost.update(
+  updatePost = async (postId, content, postPhoto) => {
+    return await this.postsModel.update(
       { postPhoto, content },
       { where: { postId: postId } },
     );
@@ -30,25 +35,20 @@ class PostRepository {
 
   //게시글 삭제
   deletePost = async (postId) => {
-    const deletePost = await this.postsModel.findByPk(postId);
-    await deletePost.destroy();
-
-    return;
+    await this.postsModel.destroy({ where: { postId } });
   };
 
-  // 메인 페이지
-
-  // 사용자가 팔로우한 사람들의 ID 가져오기
-  getFollowings = async (userId) => {
+  // 사용자가 팔로우한 사용자들의 ID 가져오기
+  findFollowings = async (userId) => {
     return this.followsModel.findAll({
       where: { UserId: userId },
       attributes: ["followUserId"],
     });
   };
 
-  // //사용자들이 팔로우한 유저의 게시물 가져오기
-  getPostsByUserIds = async (followedUserIds, userId) => {
-    const findAllFollowsPost = await this.postsModel.findAll({
+  //사용자가 팔로우한 사용자들의 게시물 가져오기
+  findPostsOfFollowings = async (followedUserIds, userId) => {
+    const posts = await this.postsModel.findAll({
       where: { UserId: followedUserIds },
       attributes: [
         "postId",
@@ -59,13 +59,13 @@ class PostRepository {
         "updatedAt",
         [
           sequelize.literal(
-            "(SELECT COUNT(*) FROM Likes WHERE Likes.PostId = Posts.postId)"
+            "(SELECT COUNT(*) FROM Likes WHERE Likes.PostId = Posts.postId)",
           ),
           "likesCount",
         ],
         [
           sequelize.literal(
-            "(SELECT COUNT(*) FROM Comments WHERE Comments.PostId = Posts.postId)"
+            "(SELECT COUNT(*) FROM Comments WHERE Comments.PostId = Posts.postId)",
           ),
           "commentsCount",
         ],
@@ -76,22 +76,18 @@ class PostRepository {
           attributes: ["nickname", "userPhoto"],
         },
       ],
-      // group: ['Posts.postId'],
-      // distinct: true,
     });
 
-
-    findAllFollowsPost.sort((a, b) => b.createdAt - a.createdAt);
+    posts.sort((a, b) => b.createdAt - a.createdAt);
 
     const postsLikes = await Promise.all(
-      findAllFollowsPost.map(async (post) => {
+      posts.map(async (post) => {
         const postJSON = post.toJSON();
         const likes = await this.likesModel.findOne({
           where: {
             [Op.and]: [{ PostId: postJSON.postId }, { UserId: userId }],
           },
         });
-        // !!likes === likes ?
         postJSON.isLiked = !!likes;
 
         return postJSON;
@@ -101,20 +97,14 @@ class PostRepository {
     return postsLikes;
   };
 
-  getPostsOfUserId = async (userId) => {
+  // 사용자 아이디의 전체 게시물 조회
+  findPostsByUserId = async (userId) => {
     return await this.postsModel.findAll({ where: { UserId: userId } });
   };
 
-  commentsCount = async (postId) => {
-    return await this.commentsModel.count({ where: { PostId: postId } });
-  };
-  likesCount = async (postId) => {
-    return await this.likesModel.count({ where: { PostId: postId } });
-  };
-
   //탐색 페이지
-  getRandomPostsFromDb = async (userId) => {
-    const ramdonPostsFromDb = await this.postsModel.findAll({
+  findPostsByRandom = async (userId) => {
+    const posts = await this.postsModel.findAll({
       order: sequelize.literal("RAND()"),
       // limit: 6,
       attributes: [
@@ -126,13 +116,13 @@ class PostRepository {
         "updatedAt",
         [
           sequelize.literal(
-            "(SELECT COUNT(*) FROM Likes WHERE Likes.PostId = Posts.postId)"
+            "(SELECT COUNT(*) FROM Likes WHERE Likes.PostId = Posts.postId)",
           ),
           "likesCount",
         ],
         [
           sequelize.literal(
-            "(SELECT COUNT(*) FROM Comments WHERE Comments.PostId = Posts.postId)"
+            "(SELECT COUNT(*) FROM Comments WHERE Comments.PostId = Posts.postId)",
           ),
           "commentsCount",
         ],
@@ -145,17 +135,14 @@ class PostRepository {
       ],
     });
 
-    // ramdonPostsFromDb.sort((a, b) => b.createdAt - a.createdAt);
-
     const postsLikes = await Promise.all(
-      ramdonPostsFromDb.map(async (post) => {
+      posts.map(async (post) => {
         const postJSON = post.toJSON();
         const likes = await this.likesModel.findOne({
           where: {
             [Op.and]: [{ PostId: postJSON.postId }, { UserId: userId }],
           },
         });
-        // !!likes === likes ?
         postJSON.isLiked = !!likes;
 
         return postJSON;
@@ -165,17 +152,15 @@ class PostRepository {
     return postsLikes;
   };
 
-  //팔로우여부구하기
-  postUserFollow = async (followUserId, userId) => {
+  findFollow = async (followUserId, userId) => {
     return await this.followsModel.findOne({
-      where: { [Op.and]: [{ followUserId: followUserId }, { UserId: userId }] },
+      where: { [Op.and]: [{ followUserId }, { UserId: userId }] },
       attributes: ["followId"],
     });
   };
 
-  //포스트정보
-  getPost = async (postId) => {
-    const postInfo = await this.postsModel.findOne({
+  findPostWithLikeCounts = async (postId) => {
+    return await this.postsModel.findOne({
       where: { postId },
       attributes: [
         "postId",
@@ -186,7 +171,7 @@ class PostRepository {
         "updatedAt",
         [
           sequelize.literal(
-            "(SELECT COUNT(*) FROM Likes WHERE Likes.PostId = Posts.postId)"
+            "(SELECT COUNT(*) FROM Likes WHERE Likes.PostId = Posts.postId)",
           ),
           "likesCount",
         ],
@@ -198,41 +183,30 @@ class PostRepository {
         },
       ],
     });
-    return postInfo;
   };
 
-  //게시글 좋아요
-
-  findOnePost = async (postId) => {
-    return await this.postsModel.findOne({
-      where: { postId: postId },
-    });
-  };
-
-  updateLikeDb = async (postId, userId) => {
-    const existsLikesByUser = await this.likesModel.findOne({
+  updateLike = async (postId, userId) => {
+    const like = await this.likesModel.findOne({
       where: {
         [Op.and]: [{ PostId: postId }, { UserId: userId }],
       },
     });
 
-    if (existsLikesByUser) {
+    if (like) {
       await this.likesModel.destroy({
         where: {
           [Op.and]: [{ PostId: postId }, { UserId: userId }],
         },
       });
-
-      return "likesDestroy";
     } else {
       await this.likesModel.create({
         PostId: postId,
         UserId: userId,
       });
-
-      return "likesCreate";
     }
+    return like;
   };
+
   findPostsBySearch = async (search) => {
     return await this.postsModel.findAll({
       where: {
@@ -243,4 +217,4 @@ class PostRepository {
     });
   };
 }
-module.exports = PostRepository;
+module.exports = PostsRepository;
