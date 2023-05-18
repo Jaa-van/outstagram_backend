@@ -42,6 +42,7 @@ class FollowsRepository {
     return following ? true : false;
   };
 
+
   // 팔로잉 리스트 조회
   // UserId(팔로워)가 myUserId
   // 즉, 내가 팔로우하는 사용자(팔로잉) 리스트
@@ -60,6 +61,7 @@ class FollowsRepository {
       ],
     });
   };
+
 
   // 팔로워 리스트 조회
   // followUserId(팔로우 당한 사용자)가 myUserId
