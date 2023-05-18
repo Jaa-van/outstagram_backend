@@ -1,5 +1,4 @@
 const redis = require("redis");
-// sequelize 없어도 되는지?
 const sequelize = require("sequelize");
 require("dotenv").config();
 
@@ -25,7 +24,7 @@ class RedisClientRepository {
 
     if (!this.redisConnected) {
       this.redisClient.connect().then();
-    } // redis v4 연결 (비동기)
+    }
   };
 
   setRefreshToken = async (refreshToken, email) => {

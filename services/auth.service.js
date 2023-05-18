@@ -1,4 +1,3 @@
-// 내장 모듈 불러오기 (최상단)
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 const ejs = require("ejs");
@@ -8,7 +7,6 @@ require("dotenv").config();
 const env = process.env;
 var appDir = path.dirname(require.main.filename);
 
-// 우리가 만든 모듈 불러오기 (최하단)
 const UsersRepository = require("../repositories/users.repository");
 const RedisClientRepository = require("../repositories/redisClient.repository");
 
@@ -41,7 +39,6 @@ class AuthService {
   };
 
   sendAuthMail = async (mail, authNum) => {
-    // emailTemplete -> emailTemplate 오타 수정
     let emailTemplate;
 
     ejs.renderFile(
@@ -61,7 +58,6 @@ class AuthService {
       port: 465,
       secure: false,
       auth: {
-        // process.env 대신 위에서 불러온 env 사용
         user: env.NODEMAILER_USER,
         pass: env.NODEMAILER_PASS,
       },
