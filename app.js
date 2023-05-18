@@ -5,7 +5,7 @@ const cors = require("cors");
 const app = express();
 const port = 3000;
 
-var http = require("http").createServer(app);
+/*var http = require("http").createServer(app);
 const io = require("socket.io")(http);
 
 io.on("connection", (socket) => {
@@ -26,7 +26,7 @@ io.on("connection", (socket) => {
       (data.room = socket.room),
       socket.broadcast.to(socket.room).emit("chat message", data);
   });
-});
+});*/
 
 app.use(cors());
 
@@ -38,6 +38,6 @@ app.use(cookieParser());
 app.use("/api", router);
 app.use(errorHandler);
 
-http.listen(port, () => {
+app.listen(port, () => {
   console.log(port, "포트로 서버가 열렸어요!");
 });

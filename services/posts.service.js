@@ -87,7 +87,11 @@ class PostService {
 
   // 게시물 상세 조회
   findDetailedPost = async (postId, userId) => {
-    const post = await this.postsRepository.findPostWithLikeCounts(postId);
+    const post = await this.postsRepository.findPostWithLikeCounts(
+      userId,
+      postId,
+    );
+
     const follow = await this.postsRepository.findFollow(post.UserId, userId);
 
     let followed = follow ? true : false;
