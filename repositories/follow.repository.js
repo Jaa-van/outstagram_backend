@@ -51,7 +51,7 @@ class FollowRepository {
   // // 내가 팔로우 누른 사람들의 리스트
   getFollowersByFollowUserId = async (myUserId) => {
     const followerList = await this.usersModel.findAll({
-      attributes: ["name", "nickname", "userPhoto"],
+      attributes: ["userId", "name", "nickname", "userPhoto"],
       include: [
         {
           model: this.followsModel,
@@ -68,7 +68,7 @@ class FollowRepository {
 
   getFollowByUserId = async (myUserId) => {
     const follows = await this.usersModel.findAll({
-      attributes: ["name", "nickname", "userPhoto"],
+      attributes: ["userId", "name", "nickname", "userPhoto"],
       include: [
         {
           model: this.followsModel,
