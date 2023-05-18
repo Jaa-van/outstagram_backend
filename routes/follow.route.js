@@ -1,18 +1,18 @@
 const express = require("express");
 const router = express.Router();
 
-const FollowController = require("../controllers/follow.controller");
+const FollowsController = require("../controllers/follow.controller");
 const authMiddleware = require("../middlewares/auth-middleware");
 
-const followController = new FollowController();
+const followsController = new FollowsController();
 
-router.get("/users/:userId", authMiddleware, followController.getPageByUserId);
+router.get("/:userId", authMiddleware, followsController.readPageByUserId);
 
-router.put("/users/:userId/follow", authMiddleware, followController.putFollow);
+router.put("/:userId/follow", authMiddleware, followsController.updateFollow);
 
-router.get("/users/:userId/follower", followController.getFollower);
+router.get("/:userId/follower", followsController.readFollowers);
 
-router.get("/users/:userId/follow", followController.getFollow);
+router.get("/:userId/follow", followsController.readFollowings);
 
 router.get("/usersrandom", followController.getRandomUsers);
 

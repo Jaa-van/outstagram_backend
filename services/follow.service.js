@@ -1,34 +1,26 @@
-const FollowRepository = require("../repositories/follow.repository");
-const PostRepository = require("../repositories/posts.repository");
+const FollowsRepository = require("../repositories/follow.repository");
+const PostsRepository = require("../repositories/posts.repository");
+const UsersRepository = require("../repositories/users.repository");
 
 const { Posts, Users, Follows } = require("../models");
 
-class FollowService {
-  followRepository = new FollowRepository(Follows, Users);
-  postRepository = new PostRepository(Posts, Users, Follows);
+class FollowsService {
+  followsRepository = new FollowsRepository(Follows, Users);
+  usersRepository = new UsersRepository(Users);
+  postsRepository = new PostsRepository(Posts, Users, Follows);
 
-  getPageByUserId = async (myUserId, userId) => {
-    const user = await this.followRepository.findUserById(userId);
+  findPageByUserId = async (myUserId, userId) => {
+    const user = await this.usersRepository.findUserById(userId);
     if (!user) {
       throw new Error("404/존재하지 않는 사용자입니다.");
     }
 
-    // 내 페이지인지 여부
-    const isMine = myUserId === Number(userId);
-
-    // 프로필 사진, 닉네임
-    const { userPhoto, nickname } = await this.followRepository.findUserById(
-      userId,
-    );
-
-    // 팔로우 여부
-    const isFollowing = await this.followRepository.checkIfFollowing(
+    const isFollowing = await this.followsRepository.checkIfFollowing(
       myUserId,
       userId,
     );
 
-    // 게시글 배열 조회 / 게시글 갯수
-    const detailPosts = await this.postRepository.getPostsOfUserId(userId);
+    const detailPosts = await this.postsRepository.findPostsByUserId(userId);
     const posts = detailPosts.map((post) => {
       return {
         postId: post.postId,
@@ -37,15 +29,17 @@ class FollowService {
     });
     const postsCount = posts.length;
 
-    // 팔로워 갯수
-    const followerCount = (
-      await this.followRepository.getFollowByUserId(userId)
-    ).length;
+    const followCount = (await this.followsRepository.findFollowings(userId))
+      .length;
 
-    // 팔로우 갯수
-    const followCount = (
-      await this.followRepository.getFollowersByFollowUserId(userId)
-    ).length;
+    const followerCount = (await this.followsRepository.findFollowers(userId))
+      .length;
+
+    const { userPhoto, nickname } = await this.usersRepository.findUserById(
+      userId,
+    );
+
+    const isMine = myUserId === Number(userId);
 
     return {
       isFollowing,
@@ -59,39 +53,25 @@ class FollowService {
     };
   };
 
-  putFollow = async (userId, followUserId) => {
-    if (userId == followUserId) {
+  followAndUnfollow = async (userId, followUserId) => {
+    if (userId === followUserId) {
       throw new Error("403/자신을 팔로우할 수 없습니다.");
     }
 
-    const existsUser = await this.followRepository.findUserById(followUserId);
-    if (!existsUser) {
+    const user = await this.usersRepository.findUserById(followUserId);
+    if (!user) {
       throw new Error("404/팔로우할 유저가 존재하지 않습니다.");
     }
 
-    const updateFollow = await this.followRepository.updateFollowDb(
-      userId,
-      followUserId,
-    );
-
-    if (updateFollow == "followCreate") {
-      return "팔로우 하였습니다.";
-    } else {
-      return "팔로우 취소하였습니다.";
-    }
+    return await this.followsRepository.followAndUnfollow(userId, followUserId);
   };
 
-  getFollower = async (myUserId) => {
-    const followerListFromDb =
-      await this.followRepository.getFollowersByFollowUserId(myUserId);
-    return followerListFromDb;
+  findFollowers = async (myUserId) => {
+    return await this.followsRepository.findFollowers(myUserId);
   };
 
-  getFollow = async (myUserId) => {
-    const followListFromDb = await this.followRepository.getFollowByUserId(
-      myUserId,
-    );
-    return followListFromDb;
+  findFollowings = async (myUserId) => {
+    return await this.followsRepository.findFollowings(myUserId);
   };
 
   getRandomUsers = async () => {
@@ -106,4 +86,4 @@ class FollowService {
   };
 }
 
-module.exports = FollowService;
+module.exports = FollowsService;

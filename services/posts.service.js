@@ -1,49 +1,28 @@
-const PostRepository = require("../repositories/posts.repository");
-const AuthRepository = require("../repositories/auth.repository");
+const PostsRepository = require("../repositories/posts.repository");
+const UsersRepository = require("../repositories/users.repository");
 const { Posts, Users, Likes, Follows, Comments } = require("../models");
 
 class PostService {
-  postRepository = new PostRepository(Posts, Users, Likes, Follows, Comments);
-  // authRepository 인스턴스 생성
-  authRepository = new AuthRepository(Users);
-  //게시글 생성
-  createPost = async (userId, content, postPhoto) => {
-    return await this.postRepository.createPost(userId, content, postPhoto);
-  };
-  //게시글 수정
-  findOnePost = async (postId) => {
-    return await this.postRepository.findOnePost(postId);
-  };
-  putPost = async (postId, content) => {
-    return await this.postRepository.putPost(postId, content);
-  };
-  //게시글 삭제
-  deletePost = async (postId) => {
-    return await this.postRepository.deletePost(postId);
-  };
-  //메인페이지
+  postsRepository = new PostsRepository(Posts, Users, Likes, Follows, Comments);
+  usersRepository = new UsersRepository(Users);
 
-  findAllFollowsPost = async (userId) => {
-    const followings = await this.postRepository.getFollowings(userId);
+  // 메인 페이지
+  findPostsOfFollowings = async (userId) => {
+    const followings = await this.postsRepository.findFollowings(userId);
 
-    const followedUserIds = await followings.map(
+    const idsOfFollowings = await followings.map(
       (following) => following.followUserId,
     );
-    const followedPosts = await this.postRepository.getPostsByUserIds(
-      followedUserIds,
+    const posts = await this.postsRepository.findPostsOfFollowings(
+      idsOfFollowings,
       userId,
     );
 
-    const result = await Promise.all(
-      followedPosts.map(async (post) => {
-        let mine;
-        if (post.UserId == userId) {
-          mine = true;
-        } else {
-          mine = false;
-        }
+    return await Promise.all(
+      posts.map(async (post) => {
+        let mine = post.UserId === userId ? true : false;
 
-        const result = {
+        return {
           postId: post.postId,
           UserId: post.UserId,
           content: post.content,
@@ -56,36 +35,24 @@ class PostService {
           isliked: post.isLiked,
           follow: true,
         };
-        return result;
       }),
     );
-    return result;
   };
 
+  // 랜덤 페이지
+  findPostsByRandom = async (userId) => {
+    const posts = await this.postsRepository.findPostsByRandom(userId);
 
-  //탐색페이지
-  getRandomPosts = async (userId) => {
-    const randomPosts = await this.postRepository.getRandomPostsFromDb(userId);
-
-    const result = await Promise.all(
-      randomPosts.map(async (post) => {
-        const follow = await this.postRepository.postUserFollow(
+    return await Promise.all(
+      posts.map(async (post) => {
+        const follow = await this.postsRepository.findFollow(
           post.UserId,
           userId,
         );
-        let followed;
-        if (!follow) {
-          followed = false;
-        } else {
-          followed = true;
-        }
+        let followed = follow ? true : false;
 
-        let mine;
-        if (post.UserId == userId) {
-          mine = true;
-        } else {
-          mine = false;
-        }
+        let mine = post.UserId === userId ? true : false;
+
         return {
           postId: post.postId,
           UserId: post.UserId,
@@ -101,31 +68,33 @@ class PostService {
         };
       }),
     );
-    return result;
   };
 
-  //게시물 상세페이지
-  findOnePost = async (postId, userId) => {
+  findUserNicknameAndPhoto = async (userId) => {
+    const user = await this.usersRepository.findUserById(userId);
 
-    const post = await this.postRepository.getPost(postId);
-    const follow = await this.postRepository.postUserFollow(
-      post.UserId,
-      userId,
-    );
-    let followed;
-    if (!follow) {
-      followed = false;
-    } else {
-      followed = true;
-    }
-    let mine;
-    if (post.UserId == userId) {
-      mine = true;
-    } else {
-      mine = false;
-    }
-    // console.log(post.dataValues.postId, "here~~~~~~~~~~~~~~~~~~~~~~~~~~~~~`")
-    const result = {
+    return {
+      nickname: user.nickname,
+      userPhoto: user.userPhoto,
+      UserId: userId,
+    };
+  };
+
+  // 게시글 생성
+  createPost = async (userId, content, postPhoto) => {
+    return await this.postsRepository.createPost(userId, content, postPhoto);
+  };
+
+  // 게시물 상세 조회
+  findDetailedPost = async (postId, userId) => {
+    const post = await this.postsRepository.findPostWithLikeCounts(postId);
+    const follow = await this.postsRepository.findFollow(post.UserId, userId);
+
+    let followed = follow ? true : false;
+
+    let mine = post.UserId === userId ? true : false;
+
+    return {
       postId: post.postId,
       UserId: post.UserId,
       content: post.content,
@@ -136,29 +105,31 @@ class PostService {
       mine: mine,
       follow: followed,
     };
-    return result;
   };
 
-  //게시글좋아요
-  putLike = async (postId, userId) => {
-    const existsPost = await this.postRepository.findOnePost(postId);
-    if (!existsPost) {
+  // 게시글 단순 조회
+  findPostById = async (postId) => {
+    return await this.postsRepository.findPostById(postId);
+  };
+
+  // 게시글 수정
+  updatePost = async (postId, content) => {
+    return await this.postsRepository.updatePost(postId, content);
+  };
+
+  // 게시글 삭제
+  deletePost = async (postId) => {
+    await this.postsRepository.deletePost(postId);
+  };
+
+  // 좋아요
+  updateLike = async (postId, userId) => {
+    const post = await this.postsRepository.findPostById(postId);
+    if (!post) {
       throw new Error("404/게시글이 존재하지 않습니다.");
     }
-    const updatedLike = await this.postRepository.updateLikeDb(postId, userId);
-    if (updatedLike == "likesCreate") {
-      return "게시글의 좋아요를 등록하였습니다.";
-    } else {
-      return "게시글의 좋아요를 취소하였습니다.";
-    }
-  };
 
-  getUserData = async (userId) => {
-    const userData = await this.authRepository.findUserById(userId);
-    return {
-      nickname: userData.nickname,
-      userPhoto: userData.userPhoto,
-    };
+    return await this.postsRepository.updateLike(postId, userId);
   };
 }
 

@@ -1,59 +1,50 @@
-const CommentRepository = require("../repositories/comments.repository.js");
+const CommentsRepository = require("../repositories/comments.repository.js");
+const UsersRepository = require("../repositories/users.repository.js");
 
-const { Comments, Posts, Users } = require("../models");
+const { Comments, Users } = require("../models");
 
-class CommentService {
-  commentRepository = new CommentRepository(Comments, Posts, Users);
+class CommentsService {
+  commentsRepository = new CommentsRepository(Comments);
+  usersRepository = new UsersRepository(Users);
 
-  // 메인 페이지 댓글 생성 & 게시물 상세 조회 댓글 생성
+  // 댓글 생성
   createComment = async (userId, postId, comment) => {
-    await this.commentRepository.createComment(userId, postId, comment);
-
-    return { message: "댓글을 작성하였습니다." };
+    return await this.commentsRepository.createComment(userId, postId, comment);
   };
 
-  // 게시물 조회 (with postId) 지현님 posts 하면 거기서 갖고오기
-  findOnePost = async (postId) => {
-    return await this.commentRepository.findOnePost(postId);
-  };
+  // 게시물 아이디의 전체 댓글 조회
+  findCommentsByPostId = async (postId) => {
+    const comments = await this.commentsRepository.findCommentsByPostId(postId);
 
-  // 댓글 전체 조회 (with postId)
-  findComments = async (postId) => {
-    const findCommentsData = await this.commentRepository.findComments(postId);
-
-    const result = await Promise.all(
-      findCommentsData.map(async (comment) => {
-        const user = await this.commentRepository.findOneUser(comment.UserId); // 유저 찾기
+    const commentsWithDetail = await Promise.all(
+      comments.map(async (comment) => {
+        const user = await this.usersRepository.findUserById(comment.UserId);
 
         return {
           commentId: comment.commentId,
           UserId: comment.UserId,
           PostId: comment.PostId,
           comment: comment.comment,
-          nickname: user.nickname, // 사용자의 닉네임 필드 추가
-          userPhoto: user.userPhoto, // 사용자의 프로필 사진 필드 추가
+          nickname: user.nickname,
+          userPhoto: user.userPhoto,
           createdAt: comment.createdAt,
           updatedAt: comment.updatedAt,
         };
       }),
     );
 
-    return result.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+    return commentsWithDetail.sort((a, b) => b.createdAt - a.createdAt);
   };
 
-  // 댓글 하나 찾기 (with commentId)
-  findOneComment = async (commentId) => {
-    return await this.commentRepository.findOneComment(commentId);
+  // 댓글 아이디로 댓글 조회
+  findCommentById = async (commentId) => {
+    return await this.commentsRepository.findCommentById(commentId);
   };
 
-  // 게시물 상세 조회 들어가서 댓글 삭제
+  // 댓글 삭제
   deleteComment = async (userId, postId, commentId) => {
-    await this.commentRepository.deleteComment(userId, postId, commentId);
-
-    return { message: "댓글을 지웠습니다." };
+    await this.commentsRepository.deleteComment(userId, postId, commentId);
   };
-
-  // 댓글 한개 조회 (with postId, commentId)
 }
 
-module.exports = CommentService;
+module.exports = CommentsService;
