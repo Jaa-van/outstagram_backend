@@ -1,14 +1,12 @@
-const { Server } = require("http");
 const express = require("express");
 const cookieParser = require("cookie-parser");
 require("express-async-errors");
 const cors = require("cors");
 const app = express();
-
-const http = Server(app);
-const io = socketIo(http);
-
 const port = 3000;
+
+var http = require("http").createServer(app);
+const io = require("socket.io")(http);
 
 io.on("connection", (socket) => {
   console.log("소켓이 연결되었습니다.");
