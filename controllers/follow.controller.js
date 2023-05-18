@@ -1,7 +1,21 @@
-const FollowService = require("../services/follows.service");
+const FollowService = require("../services/follow.service");
 
 class FollowController {
   followService = new FollowService();
+
+  readPageByUserId = async (req, res, next) => {
+    try {
+      const myUserId = res.locals.user.userId;
+      const { userId } = req.params;
+
+      const page = await this.followService.findPageByUserId(myUserId, userId);
+
+      res.status(200).json({ page });
+    } catch (error) {
+      error.failedApi = "유저 페이지 조회";
+      throw error;
+    }
+  };
 
   updateFollow = async (req, res, next) => {
     try {
@@ -24,19 +38,6 @@ class FollowController {
     }
   };
 
-  // 팔로잉 조회
-  readFollowings = async (req, res, next) => {
-    try {
-      const myUserId = req.params.userId;
-
-      const followerList = await this.followService.findFollowings(myUserId);
-      res.status(200).json(followerList);
-    } catch (error) {
-      error.failedApi = "팔로잉 조회";
-      throw error;
-    }
-  };
-
   // 팔로워 조회
   readFollowers = async (req, res, next) => {
     try {
@@ -50,16 +51,15 @@ class FollowController {
     }
   };
 
-  readPageByUserId = async (req, res, next) => {
+  // 팔로잉 조회
+  readFollowings = async (req, res, next) => {
     try {
-      const myUserId = res.locals.user.userId;
-      const { userId } = req.params;
+      const myUserId = req.params.userId;
 
-      const page = await this.followService.findPageByUserId(myUserId, userId);
-
-      res.status(200).json({ page });
+      const followerList = await this.followService.findFollowings(myUserId);
+      res.status(200).json(followerList);
     } catch (error) {
-      error.failedApi = "유저 페이지 조회";
+      error.failedApi = "팔로잉 조회";
       throw error;
     }
   };

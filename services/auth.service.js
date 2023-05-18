@@ -95,23 +95,12 @@ class AuthService {
       throw new Error("412/이메일 또는 패스워드를 확인해주세요.");
     }
 
-    // 변수 선언 대신에 jwt.sign 바로 return
     return [
-      jwt.sign(
-        { userId: user.userId }, // JWT 데이터
-        `${env.SECRET_KEY}`, // 비밀키
-        { expiresIn: "2h" },
-      ),
+      jwt.sign({ userId: user.userId }, `${env.SECRET_KEY}`, {
+        expiresIn: "2h",
+      }),
       user.userId,
-    ]; // Access Token이 2시간 뒤에 만료되도록 설정합니다.
-  };
-
-  createAccessTokenById = async (userId) => {
-    return jwt.sign(
-      { userId: userId }, // JWT 데이터
-      `${env.SECRET_KEY}`, // 비밀키
-      { expiresIn: "2h" },
-    ); // Access Token이 2시간 뒤에 만료되도록 설정합니다.
+    ];
   };
 
   createRefreshToken = async (email, password) => {
@@ -120,21 +109,22 @@ class AuthService {
       password,
     );
 
-    const refreshToken = jwt.sign(
-      {}, // JWT 데이터
-      `${env.SECRET_KEY}`, // 비밀키
-      { expiresIn: "7d" },
-    ); // Refresh Token이 7일 뒤에 만료되도록 설정합니다.
-    // 사용하지 않는 saveRtDb 정의 x
+    const refreshToken = jwt.sign({}, `${env.SECRET_KEY}`, { expiresIn: "7d" });
 
     await this.redisClientRepository.setRefreshToken(refreshToken, user.userId);
+
     return refreshToken;
+  };
+
+  createAccessTokenById = async (userId) => {
+    return jwt.sign({ userId: userId }, `${env.SECRET_KEY}`, {
+      expiresIn: "2h",
+    });
   };
 
   verifyRefreshToken = async (refreshToken) => {
     const [authType, authToken] = (refreshToken ?? "").split(" ");
 
-    // Bearer 와 로그인을 안한 것에 대한 검사
     if (authType !== "Bearer" || !authToken) {
       throw new Error("419/refreshToken의 형식이 일치하지 않습니다.");
     }
@@ -147,7 +137,7 @@ class AuthService {
     }
 
     try {
-      jwt.verify(authToken, `${env.SECRET_KEY}`); // JWT를 검증합니다.
+      jwt.verify(authToken, `${env.SECRET_KEY}`);
 
       return true;
     } catch (error) {

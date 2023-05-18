@@ -35,7 +35,7 @@ class PostsRepository {
 
   //게시글 삭제
   deletePost = async (postId) => {
-    await deletePost.destroy({ where: { postId } });
+    await this.postsModel.destroy({ where: { postId } });
   };
 
   // 사용자가 팔로우한 사용자들의 ID 가져오기

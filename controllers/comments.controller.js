@@ -16,7 +16,7 @@ class CommentsController {
         throw new Error("403/댓글 작성에 실패하였습니다.");
       }
 
-      const post = await this.postsService.findPostByPostId(postId);
+      const post = await this.postsService.findPostById(postId);
       if (!post) {
         throw new Error("403/게시물이 존재하지 않습니다.");
       }
@@ -35,7 +35,7 @@ class CommentsController {
     try {
       const { postId } = req.params;
 
-      const post = await this.postsService.findPostByPostId(postId);
+      const post = await this.postsService.findPostById(postId);
       if (!post) {
         throw new Error("403/게시물이 존재하지 않습니다.");
       }
@@ -58,7 +58,7 @@ class CommentsController {
       const { userId } = res.locals.user;
       const { postId, commentId } = req.params;
 
-      const post = await this.postsService.findPostByPostId(postId);
+      const post = await this.postsService.findPostById(postId);
       if (!post) {
         throw new Error("403/게시물이 존재하지 않습니다.");
       }

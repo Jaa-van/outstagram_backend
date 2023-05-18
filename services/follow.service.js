@@ -1,4 +1,4 @@
-const FollowsRepository = require("../repositories/follows.repository");
+const FollowsRepository = require("../repositories/follow.repository");
 const PostsRepository = require("../repositories/posts.repository");
 const UsersRepository = require("../repositories/users.repository");
 
@@ -9,29 +9,8 @@ class FollowsService {
   usersRepository = new UsersRepository(Users);
   postsRepository = new PostsRepository(Posts, Users, Follows);
 
-  followAndUnfollow = async (userId, followUserId) => {
-    if (userId === followUserId) {
-      throw new Error("403/자신을 팔로우할 수 없습니다.");
-    }
-
-    const user = await this.usersRepository.findUserById(followUserId);
-    if (!user) {
-      throw new Error("404/팔로우할 유저가 존재하지 않습니다.");
-    }
-
-    return await this.followsRepository.followAndUnfollow(userId, followUserId);
-  };
-
-  findFollowings = async (myUserId) => {
-    return await this.followsRepository.findFollowings(myUserId);
-  };
-
-  findFollowers = async (myUserId) => {
-    return await this.followsRepository.findFollowers(myUserId);
-  };
-
   findPageByUserId = async (myUserId, userId) => {
-    const user = await this.followsRepository.findUserById(userId);
+    const user = await this.usersRepository.findUserById(userId);
     if (!user) {
       throw new Error("404/존재하지 않는 사용자입니다.");
     }
@@ -41,7 +20,7 @@ class FollowsService {
       userId,
     );
 
-    const detailPosts = await this.postRepository.findPostsByUserId(userId);
+    const detailPosts = await this.postsRepository.findPostsByUserId(userId);
     const posts = detailPosts.map((post) => {
       return {
         postId: post.postId,
@@ -72,6 +51,27 @@ class FollowsService {
       mine: isMine,
       data: posts,
     };
+  };
+
+  followAndUnfollow = async (userId, followUserId) => {
+    if (userId === followUserId) {
+      throw new Error("403/자신을 팔로우할 수 없습니다.");
+    }
+
+    const user = await this.usersRepository.findUserById(followUserId);
+    if (!user) {
+      throw new Error("404/팔로우할 유저가 존재하지 않습니다.");
+    }
+
+    return await this.followsRepository.followAndUnfollow(userId, followUserId);
+  };
+
+  findFollowers = async (myUserId) => {
+    return await this.followsRepository.findFollowers(myUserId);
+  };
+
+  findFollowings = async (myUserId) => {
+    return await this.followsRepository.findFollowings(myUserId);
   };
 }
 

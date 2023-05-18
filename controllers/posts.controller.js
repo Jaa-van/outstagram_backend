@@ -3,6 +3,50 @@ const PostService = require("../services/posts.service");
 class PostController {
   postService = new PostService();
 
+  // 메인 페이지
+  readMainPage = async (req, res, next) => {
+    try {
+      const { userId } = res.locals.user;
+
+      const followedPosts = await this.postService.findPostsOfFollowings(
+        userId,
+      );
+
+      res.status(200).json(followedPosts);
+    } catch (error) {
+      error.failedApi = "메인 페이지 조회";
+      throw error;
+    }
+  };
+
+  // 랜덤 페이지
+  readRandomPage = async (req, res, next) => {
+    try {
+      const { userId } = res.locals.user;
+
+      const randomPosts = await this.postService.findPostsByRandom(userId);
+
+      res.status(200).json(randomPosts);
+    } catch (error) {
+      error.failedApi = "게시물 조회";
+      throw error;
+    }
+  };
+
+  // 유저 정보 조회
+  readUserNicknameAndPhoto = async (req, res, next) => {
+    try {
+      const { userId } = res.locals.user;
+
+      const userData = await this.postService.findUserNicknameAndPhoto(userId);
+
+      res.status(200).json(userData);
+    } catch (error) {
+      error.failedApi = "유저 조회";
+      throw error;
+    }
+  };
+
   // 게시물 생성
   createPost = async (req, res, next) => {
     try {
@@ -23,14 +67,30 @@ class PostController {
     }
   };
 
+  // 게시물 상세 페이지 조회
+  readPost = async (req, res, next) => {
+    try {
+      const { userId } = res.locals.user;
+      const { postId } = req.params;
+
+      const post = await this.postService.findDetailedPost(postId, userId);
+
+      res.status(200).json(post);
+    } catch (error) {
+      error.failedApi = "상세페이지 조회";
+      throw error;
+    }
+  };
+
   // 게시물 수정
   updatePost = async (req, res, next) => {
+    console.log("UPDATE");
     try {
       const { userId } = res.locals.user;
       const { postId } = req.params;
       const { content } = req.body;
 
-      const post = await this.postService.findDetailedPost(postId);
+      const post = await this.postService.findPostById(postId);
       if (!post) {
         throw new Error("412/게시글이 존재하지 않습니다.");
       }
@@ -55,7 +115,7 @@ class PostController {
       const { postId } = req.params;
 
       const post = await this.postService.findPostById(postId);
-      if (!findOnePost) {
+      if (!post) {
         throw new Error("412/게시글이 존재하지 않습니다.");
       }
 
@@ -72,52 +132,7 @@ class PostController {
     }
   };
 
-  // 메인페이지
-  readMainPage = async (req, res, next) => {
-    try {
-      const { userId } = res.locals.user;
-
-      const followedPosts = await this.postService.findPostsOfFollowings(
-        userId,
-      );
-
-      res.status(200).json(followedPosts);
-    } catch (error) {
-      error.failedApi = "메인 페이지 조회";
-      throw error;
-    }
-  };
-
-  // 탐색페이지
-  readRandomPage = async (req, res, next) => {
-    try {
-      const { userId } = res.locals.user;
-
-      const randomPosts = await this.postService.findPostsByRandom(userId);
-
-      res.status(200).json(randomPosts);
-    } catch (error) {
-      error.failedApi = "게시물 조회";
-      throw error;
-    }
-  };
-
-  // 게시물 상세페이지
-  readPost = async (req, res, next) => {
-    try {
-      const { userId } = res.locals.user;
-      const { postId } = req.params;
-
-      const post = await this.postService.findDetailedPost(postId, userId);
-
-      res.status(200).json(post);
-    } catch (error) {
-      error.failedApi = "상세페이지 조회";
-      throw error;
-    }
-  };
-
-  // 좋아요 수정
+  // 좋아요
   updateLike = async (req, res, next) => {
     try {
       const { postId } = req.params;
@@ -132,19 +147,6 @@ class PostController {
       }
     } catch (error) {
       error.failedApi = "좋아요";
-      throw error;
-    }
-  };
-
-  readUserNicknameAndPhoto = async (req, res, next) => {
-    try {
-      const { userId } = res.locals.user;
-
-      const userData = await this.postService.findUserNicknameAndPhoto(userId);
-
-      res.status(200).json(userData);
-    } catch (error) {
-      error.failedApi = "유저 조회";
       throw error;
     }
   };

@@ -27,7 +27,7 @@ class FollowsRepository {
         followUserId,
       });
     }
-    return follow ? true : false;
+    return follow ? false : true;
   };
 
   // myUserId가 userId를 팔로우하는 지 체크
