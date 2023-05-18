@@ -6,6 +6,6 @@ const authMiddleware = require("../middlewares/auth-middleware");
 
 const searchController = new SearchController();
 
-router.get("/search", authMiddleware, searchController.searchUsersAndPosts);
+router.get("/", authMiddleware, searchController.searchUsersAndPosts);
 
 module.exports = router;
