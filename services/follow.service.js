@@ -73,6 +73,17 @@ class FollowsService {
   findFollowings = async (myUserId) => {
     return await this.followsRepository.findFollowings(myUserId);
   };
+
+  getRandomUsers = async () => {
+    const randomUsers = await this.followRepository.getRandomUsersFromDb();
+    return randomUsers.map((user) => {
+      return {
+        UserId: user.userId,
+        nickname: user.nickname,
+        userPhoto: user.userPhoto,
+      };
+    });
+  };
 }
 
 module.exports = FollowsService;

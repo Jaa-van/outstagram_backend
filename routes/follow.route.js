@@ -14,4 +14,6 @@ router.get("/:userId/follower", followsController.readFollowers);
 
 router.get("/:userId/follow", followsController.readFollowings);
 
+router.get("/usersrandom", followController.getRandomUsers);
+
 module.exports = router;
