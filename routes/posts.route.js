@@ -18,6 +18,12 @@ router.post(
   postsController.createPost,
 );
 
+// 메인 페이지
+router.get("/main", authMiddleware, postsController.readMainPage);
+
+// 랜덤 페이지
+router.get("/random", authMiddleware, postsController.readRandomPage);
+
 //게시물 상세 페이지 조회
 router.get("/:postId", authMiddleware, postsController.readPost);
 
@@ -29,11 +35,5 @@ router.delete("/:postId", authMiddleware, postsController.deletePost);
 
 // 좋아요 수정
 router.put("/:postId/like", authMiddleware, postsController.updateLike);
-
-// 메인 페이지
-router.get("/main", authMiddleware, postsController.readMainPage);
-
-// 랜덤 페이지
-router.get("random", authMiddleware, postsController.readRandomPage);
 
 module.exports = router;

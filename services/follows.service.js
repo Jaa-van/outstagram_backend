@@ -1,12 +1,12 @@
 const FollowsRepository = require("../repositories/follows.repository");
 const PostsRepository = require("../repositories/posts.repository");
-const UsersRepository = require("../repositories/posts.repository");
+const UsersRepository = require("../repositories/users.repository");
 
 const { Posts, Users, Follows } = require("../models");
 
 class FollowsService {
   followsRepository = new FollowsRepository(Follows, Users);
-  usersRepository = new FollowsRepository(Users);
+  usersRepository = new UsersRepository(Users);
   postsRepository = new PostsRepository(Posts, Users, Follows);
 
   followAndUnfollow = async (userId, followUserId) => {
@@ -19,7 +19,7 @@ class FollowsService {
       throw new Error("404/팔로우할 유저가 존재하지 않습니다.");
     }
 
-    await this.followsRepository.followAndUnfollow(userId, followUserId);
+    return await this.followsRepository.followAndUnfollow(userId, followUserId);
   };
 
   findFollowings = async (myUserId) => {

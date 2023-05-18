@@ -115,7 +115,7 @@ class AuthService {
   };
 
   createRefreshToken = async (email, password) => {
-    const user = await this.usersRepository.findUserIdEmailAndPassword(
+    const user = await this.usersRepository.findUserByEmailAndPassword(
       email,
       password,
     );
