@@ -42,13 +42,12 @@ class FollowsRepository {
     return following ? true : false;
   };
 
-
   // 팔로잉 리스트 조회
   // UserId(팔로워)가 myUserId
   // 즉, 내가 팔로우하는 사용자(팔로잉) 리스트
   findFollowings = async (myUserId) => {
     return await this.usersModel.findAll({
-      attributes: ["name", "nickname", "userPhoto"],
+      attributes: ["userId", "name", "nickname", "userPhoto"],
       include: [
         {
           model: this.followsModel,
@@ -62,13 +61,12 @@ class FollowsRepository {
     });
   };
 
-
   // 팔로워 리스트 조회
   // followUserId(팔로우 당한 사용자)가 myUserId
   // 즉, 나를 팔로우하는 사용자(팔로워) 리스트
   findFollowers = async (myUserId) => {
     return await this.usersModel.findAll({
-      attributes: ["name", "nickname", "userPhoto"],
+      attributes: ["userId", "name", "nickname", "userPhoto"],
       include: [
         {
           model: this.followsModel,
@@ -82,6 +80,14 @@ class FollowsRepository {
           },
         },
       ],
+    });
+  };
+
+  findUsersByRandom = async () => {
+    return await this.usersModel.findAll({
+      order: sequelize.literal("RAND()"),
+      limit: 8,
+      attributes: ["userId", "nickname", "userPhoto"],
     });
   };
 }

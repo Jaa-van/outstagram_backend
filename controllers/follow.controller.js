@@ -64,9 +64,9 @@ class FollowController {
     }
   };
 
-  getRandomUsers = async (req, res, next) => {
+  readRandomUsers = async (req, res, next) => {
     try {
-      const randomUsers = await this.followService.getRandomUsers();
+      const randomUsers = await this.followService.findUsersByRandom();
 
       res.status(200).json(randomUsers);
     } catch (error) {

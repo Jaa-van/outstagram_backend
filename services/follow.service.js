@@ -74,8 +74,9 @@ class FollowsService {
     return await this.followsRepository.findFollowings(myUserId);
   };
 
-  getRandomUsers = async () => {
-    const randomUsers = await this.followRepository.getRandomUsersFromDb();
+  findUsersByRandom = async () => {
+    const randomUsers = await this.followRepository.findUsersByRandom();
+
     return randomUsers.map((user) => {
       return {
         UserId: user.userId,
