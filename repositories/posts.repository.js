@@ -106,7 +106,6 @@ class PostsRepository {
   findPostsByRandom = async (userId) => {
     const posts = await this.postsModel.findAll({
       order: sequelize.literal("RAND()"),
-      // limit: 6,
       attributes: [
         "postId",
         "UserId",
